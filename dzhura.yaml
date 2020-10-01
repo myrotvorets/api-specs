@@ -232,13 +232,13 @@ paths:
                 $ref: "#/components/schemas/badRequestResponse"
 
         "401":
-          $ref: "./responses.yaml#/components/responses/not-authorized"
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
 
         "403":
-          $ref: "./responses.yaml#/components/responses/forbidden"
+          $ref: "./generic-responses.yaml#/components/responses/forbidden"
 
         "429":
-          $ref: "./responses.yaml#/components/responses/rate-limit"
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
 
 tags:
   - name: Dzhura
