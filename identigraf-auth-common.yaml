@@ -1,0 +1,49 @@
+components:
+  examples:
+    startSession:
+      summary: Successful response
+      description: "Example of a successful response: credentials have been accepted, session has been started"
+      value:
+        success: true
+        user:
+          phone: "+380680000000"
+          admin: 0
+          whitelisted: 0
+          credits: 5
+
+  schemas:
+    startSessionResponse:
+      description: Session has been started successfully
+      type: object
+      properties:
+        success:
+          description: Denotes the successful response
+          type: boolean
+          enum: [true]
+        user:
+          description: User information
+          type: object
+          properties:
+            phone:
+              description: Phone number
+              type: string
+            admin:
+              description: Administrator flag
+              type: number
+              enum: [0, 1]
+            whitelisted:
+              description: Whether the user is whitelisted. 0 if not, positive number is the number of credits
+              type: number
+              minimum: 0
+            credits:
+              description: Number of credits the user has
+              type: number
+              minimum: 0
+          required:
+            - phone
+            - admin
+            - whitelisted
+            - credits
+      required:
+        - success
+        - user

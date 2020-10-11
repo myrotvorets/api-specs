@@ -1,0 +1,176 @@
+openapi: '3.0.3'
+
+info:
+  title: IDentigraF Internal Authentication API
+  description: Authentication and Tracking Internal API for [IDentigraF](https://n.identigraf.center/). **This API is not exposed publicly**.
+  version: 2.0.0
+  contact:
+    email: support@myrotvorets.center
+
+servers:
+  - url: /
+    description: This server
+
+components:
+  responses:
+    trackUpload:
+      description: Successful response
+      content:
+        application/json:
+          example:
+            success: true
+            response:
+              credits: 2
+              whitelisted: false
+          schema:
+            type: object
+            properties:
+              success:
+                description: Denotes the successful response
+                type: boolean
+                enum: [true]
+              response:
+                type: object
+                properties:
+                  credits:
+                    description: Number of credits remaining
+                    type: number
+                  whitelisted:
+                    description: Whether the user is whitelisted
+                    type: boolean
+                required:
+                  - credits
+                  - whitelisted
+            required:
+              - success
+              - response
+
+    checkCredits:
+      description: Successful response
+      content:
+        application/json:
+          example:
+            success: true
+            credits: 5
+          schema:
+            type: object
+            properties:
+              success:
+                description: Denotes the successful response
+                type: boolean
+                enum: [true]
+              credits:
+                description: Number of remaining credits
+                type: number
+                format: int32
+
+paths:
+  /session:
+    post:
+      summary: Start session
+      description: This is an internal API endpoint, it cannot be invoked from the outside. Please use `POST /login` instead.
+      tags:
+        - IDentigraF Internal Authentication API
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uid:
+                  description: Firebase User ID
+                  type: string
+                phone:
+                  description: Phone number
+                  type: string
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "200":
+          description: Successful response, session has been started
+          content:
+            application/json:
+              examples:
+                success:
+                  $ref: "identigraf-auth-common.yaml#/components/examples/startSession"
+              schema:
+                $ref: "identigraf-auth-common.yaml#/components/schemas/startSessionResponse"
+
+  /track:
+    post:
+      summary: Track search or compare operation
+      description: This is an internal API endpoint, it cannot be invoked from the outside.
+      tags:
+        - IDentigraF Internal Tracking API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              type: search
+              guid: "00000000-0000-0000-0000-000000000000"
+              phone: "+380680000000"
+              ips:
+                - "78.30.235.66"
+              dt: 1593640625
+            schema:
+              type: object
+              properties:
+                type:
+                  description: Operation to track
+                  type: string
+                  enum: [search, compare]
+                guid:
+                  description: FaceX GUID
+                  type: string
+                  pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+                phone:
+                  description: Phone number
+                  type: string
+                ips:
+                  description: IP dddresses
+                  type: array
+                  items:
+                    type: string
+                    oneOf:
+                      - format: ipv4
+                      - format: ipv6
+                dt:
+                  description: Timestamp (number of seconds since the Epoch)
+                  type: number
+              required:
+                - type
+                - guid
+                - phone
+                - ips
+                - dt
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "200":
+          $ref: "#/components/responses/trackUpload"
+
+  /credits/{phone}:
+    get:
+      summary: Get remaining credits by phone
+      description: This is an internal API endpoint, it cannot be invoked from the outside.
+      tags:
+        - IDentigraF Internal Authentication API
+      parameters:
+        - name: phone
+          description: Phone number
+          example: "380680000000"
+          in: path
+          required: true
+          schema:
+            description: Phone number
+            type: string
+            pattern: "^380[0-9]{9}$"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "200":
+          $ref: "#/components/responses/checkCredits"

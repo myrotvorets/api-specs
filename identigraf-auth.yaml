@@ -1,0 +1,132 @@
+openapi: '3.0.3'
+
+info:
+  title: IDentigraF Authentication API
+  description: Authentication and Tracking API for [IDentigraF](https://n.identigraf.center/)
+  version: 2.0.0
+  contact:
+    email: support@myrotvorets.center
+
+servers:
+  - url: /identigraf-auth/v2
+    description: This server
+
+components:
+  securitySchemes:
+    identigraf-jwt:
+      description: Firebase JWT
+      bearerFormat: JWT
+      type: http
+      scheme: bearer
+    internal:
+      type: http
+      scheme: internal
+
+  responses:
+    checkPhoneSucceeded:
+      description: Successful response
+      content:
+        application/json:
+          example:
+            success: true
+            user: null
+          schema:
+            type: object
+            properties:
+              success:
+                description: Denotes the successful response
+                type: boolean
+                enum: [true]
+              user:
+                description: User information. Can be `null` for new users.
+                type: object
+                nullable: true
+                properties:
+                  phone:
+                    description: Phone number
+                    type: string
+                  admin:
+                    description: Administrator flag
+                    type: number
+                    enum: [0, 1]
+                  whitelisted:
+                    description: Whether the user is whitelisted. 0 if not, positive number is the number of credits
+                    type: number
+                    minimum: 0
+                  credits:
+                    description: Number of credits the user has
+                    type: number
+                    minimum: 0
+                required:
+                  - phone
+                  - admin
+                  - whitelisted
+                  - credits
+            required:
+              - success
+              - user
+
+paths:
+  /login:
+    post:
+      summary: Log the user in
+      tags:
+        - IDentigraF Authentication API
+      security:
+        - identigraf-jwt: []
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "401":
+          $ref: "generic-responses.yaml#/components/responses/not-authorized"
+
+        "429":
+          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+
+        "200":
+          description: Successful response, session has been started
+          content:
+            application/json:
+              examples:
+                success:
+                  $ref: "identigraf-auth-common.yaml#/components/examples/startSession"
+              schema:
+                $ref: "identigraf-auth-common.yaml#/components/schemas/startSessionResponse"
+
+
+  /checkphone:
+    post:
+      summary: Check phone number
+      description: |
+        If the API returns `429` response, the `code` can be one of the following:
+          * `OUT_OF_CREDITS`: the user has run out of credits
+          * `RATE_LIMIT_EXCEEDED`: please slow down, you are sending too many requests
+      tags:
+        - IDentigraF Authentication API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              phone: "+380680000000"
+            schema:
+              type: object
+              properties:
+                phone:
+                  description: Phone number
+                  type: string
+                  pattern: "^\\+380[0-9]{9}$"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "403":
+          $ref: "generic-responses.yaml#/components/responses/forbidden"
+
+        "429":
+          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+
+        "200":
+          $ref: "#/components/responses/checkPhoneSucceeded"
+
