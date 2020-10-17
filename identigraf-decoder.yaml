@@ -36,8 +36,8 @@ components:
             name: "Колесник Алексей Анатольевич"
             country: "Украина"
             link: "https://myrotvorets.center/criminals/kolesnik-aleksej-anatolevich"
-            primaryPhoto": "https://psb4ukr.natocdn.net/criminals/00/00/bd/10.jpg"
-            matchedPhoto": "https://psb4ukr.natocdn.net/criminals/00/00/bd/16.jpg"
+            primaryPhoto: "https://psb4ukr.natocdn.net/criminals/00/00/bd/10.jpg"
+            matchedPhoto: "https://psb4ukr.natocdn.net/criminals/00/00/bd/16.jpg"
           "!1-0-80-0":
             name: "Дронь Максим Викторович"
             country: "Украина"
