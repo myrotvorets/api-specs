@@ -1,0 +1,209 @@
+openapi: '3.0.3'
+
+info:
+  title: IDentigraF Uploader API
+  description: "API for IDentigraF's Uploader Microservice"
+  version: 1.0.0
+  contact:
+    email: support@myrotvorets.center
+
+servers:
+  - url: /
+    description: This server
+
+components:
+  securitySchemes:
+    internal:
+      type: http
+      scheme: internal
+
+  parameters:
+    guid:
+      name: guid
+      description: |
+        Operation GUID (returned by the respective API endpoint: for example, the `search` endpoint will not understand the GUID returned
+        by the `compare` endpoint)
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+
+    number:
+      name: number
+      description: Photo number (0…`n`-1, where `n` is the result returned by the `/count` API)
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int32
+        minimum: 0
+        maximum: 10
+
+  examples:
+    countSuccess:
+      description: Successful response
+      value:
+        success: true
+        files: 3
+
+  requestBodies:
+    saveCompareRequest:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              photos:
+                type: array
+                items:
+                  type: string
+                  format: binary
+                minItems: 2
+                maxItems: 11
+            required:
+              - photos
+          encoding:
+            photos:
+              contentType: image/jpeg, image/png
+
+    saveSearchRequest:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              photo:
+                type: string
+                format: binary
+            required:
+              - photo
+          encoding:
+            photo:
+              contentType: image/jpeg, image/png
+
+  responses:
+    saveSuccessfulResponse:
+      description: Successful response
+      content:
+        application/json:
+          example:
+            success: true
+          schema:
+            type: object
+            properties:
+              success:
+                description: Denotes the successful response
+                type: boolean
+                enum: [true]
+            required:
+              - success
+
+    getSuccessfulResponse:
+      description: Successful response
+      content:
+        image/jpeg:
+          schema:
+            type: string
+            format: byte
+
+    countSuccessfulResponse:
+      description: Successful response
+      content:
+        application/json:
+          examples:
+            countSuccess:
+              $ref: "#/components/examples/countSuccess"
+          schema:
+            type: object
+            properties:
+              success:
+                description: Denotes the successful response
+                type: boolean
+                enum: [true]
+              files:
+                description: Number of files
+                type: number
+                format: int32
+            required:
+              - success
+              - files
+
+paths:
+  /compare/{guid}:
+    post:
+      summary: Save photos for comparison
+      description: This is an internal endpoint, and it is not exposed to the public
+      security:
+        - internal: []
+      tags:
+        - IDentigraF Uploader Internal API
+      parameters:
+        - $ref: "#/components/parameters/guid"
+      requestBody:
+        $ref: "#/components/requestBodies/saveCompareRequest"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+        "200":
+          $ref: "#/components/responses/saveSuccessfulResponse"
+
+  /search/{guid}:
+    post:
+      summary: Save the photo for search
+      description: This is an internal endpoint, and it is not exposed to the public
+      security:
+        - internal: []
+      tags:
+        - IDentigraF Uploader Internal API
+      parameters:
+        - $ref: "#/components/parameters/guid"
+      requestBody:
+        $ref: "#/components/requestBodies/saveSearchRequest"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+        "200":
+          $ref: "#/components/responses/saveSuccessfulResponse"
+
+  /get/{guid}:
+    get:
+      description: Retrieve a photo by search operation GUID
+      tags:
+        - IDentigraF Uploader API
+      parameters:
+        - $ref: "#/components/parameters/guid"
+      responses:
+        "200":
+          $ref: "#/components/responses/getSuccessfulResponse"
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+  /get/{guid}/{number}:
+    get:
+      description: Retrieve a photo by compare operation GUID and photo number
+      tags:
+        - IDentigraF Uploader API
+      parameters:
+        - $ref: "#/components/parameters/guid"
+        - $ref: "#/components/parameters/number"
+      responses:
+        "200":
+          $ref: "#/components/responses/getSuccessfulResponse"
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+  /count/{guid}:
+    get:
+      description: Retrieve the number of photos for compare operation
+      tags:
+        - IDentigraF Uploader API
+      parameters:
+        - $ref: "#/components/parameters/guid"
+      responses:
+        "200":
+          $ref: "#/components/responses/countSuccessfulResponse"
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
