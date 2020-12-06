@@ -1,0 +1,193 @@
+openapi: "3.0.3"
+
+info:
+  title: IP Geolocation API
+  version: 2.0.0
+  contact:
+    email: support@myrotvorets.center
+
+servers:
+  - url: /ipgeo/v2
+    description: This server
+
+components:
+  examples:
+    countryResponseBody:
+      description: Sample response for "/country" endpoint
+      value:
+        success: true
+        response:
+          country: Ukraine
+          cc: UA
+
+    geolocateResponseBody:
+      description: Sample response for "/geolocate" endpoint
+      value:
+        success: true
+        response:
+          cc: US
+          country: United States
+          city: Bowling Green
+          id: 5147968
+          asn: 55194
+          asnOrg: Bowling Green State University
+          isp: Bowling Green State University
+          org: Bowling Green State University
+          cprefix: 24
+          iprefix: 24
+
+  parameters:
+    ip:
+      name: ip
+      in: path
+      required: true
+      description: IP address
+      schema:
+        type: string
+        oneOf:
+          - format: ipv4
+          - format: ipv6      
+
+  schemas:
+    countryResponseBody:
+      type: object
+      properties:
+        success:
+          description: Denotes the successful response
+          type: boolean
+          enum: [true]
+        response:
+          description: Geolocation response
+          type: object
+          properties:
+            country:
+              description: Country name
+              type: string
+              nullable: true
+            cc:
+              description: Country code
+              type: string
+              nullable: true
+          required:
+            - country
+            - cc
+      required:
+        - success
+        - response
+
+    geolocateResponseBody:
+      type: object
+      properties:
+        success:
+          description: Denotes the successful response
+          type: boolean
+          enum: [true]
+        response:
+          description: Geolocation response
+          type: object
+          properties:
+            country:
+              description: Country matching the IP address
+              type: string
+              nullable: true
+            cc:
+              description: Country code matching the IP address
+              type: string
+              nullable: true
+            city:
+              description: City matching the IP address
+              type: string
+              nullable: true
+            id:
+              description: Internal location ID
+              type: number
+              format: int64
+              minimum: 1
+              nullable: true
+            asn:
+              description: AS Number
+              type: number
+              format: int32
+              minimum: 1
+              nullable: true
+            asnOrg:
+              description: ASN Organization
+              type: string
+              nullable: true
+            isp:
+              description: ISP matching the IP address
+              type: string
+              nullable: true
+            org:
+              description: Organization matching the IP address
+              type: string
+              nullable: true
+            cprefix:
+              description: IP address prefix length for country / city part ofthe response
+              type: number
+              format: int32
+            iprefix:
+              description: IP address prefix length for ISP / ASN / organization part ofthe response
+              type: number
+              format: int32
+          required:
+            - country
+            - cc
+            - city
+            - id
+            - asnOrg
+            - asn
+            - isp
+            - org
+            - cprefix
+            - iprefix
+      required:
+        - success
+        - response
+
+paths:
+  /country:
+    get:
+      description: Get country information for the connecting IP
+      tags:
+        - IP Geolocation API
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/json":
+              examples:
+                successfulResponse:
+                  $ref: "#/components/examples/countryResponseBody"
+              schema:
+                $ref: "#/components/schemas/countryResponseBody"
+
+        "429":
+          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+  /geolocate/{ip}:
+    get:
+      description: Get geolocation information about the IP address
+      tags:
+        - IP Geolocation API
+      parameters:
+        - $ref: "#/components/parameters/ip"
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/json":
+              examples:
+                successfulResponse:
+                  $ref: "#/components/examples/geolocateResponseBody"
+              schema:
+                $ref: "#/components/schemas/geolocateResponseBody"
+
+        "429":
+          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
