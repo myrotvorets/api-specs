@@ -47,3 +47,64 @@ components:
       required:
         - success
         - user
+
+  requestBodies:
+    checkPhone:
+      required: true
+      content:
+        application/json:
+          example:
+            phone: "+380680000000"
+          schema:
+            type: object
+            properties:
+              phone:
+                description: Phone number
+                type: string
+                pattern: "^\\+380[0-9]{9}$"
+            required:
+              - phone
+
+  responses:
+    checkPhoneSucceeded:
+      description: Successful response
+      content:
+        application/json:
+          example:
+            success: true
+            user: null
+          schema:
+            type: object
+            properties:
+              success:
+                description: Denotes the successful response
+                type: boolean
+                enum: [true]
+              user:
+                description: User information. Can be `null` for new users.
+                type: object
+                nullable: true
+                properties:
+                  phone:
+                    description: Phone number
+                    type: string
+                  admin:
+                    description: Administrator flag
+                    type: number
+                    enum: [0, 1]
+                  whitelisted:
+                    description: Whether the user is whitelisted. 0 if not, positive number is the number of credits
+                    type: number
+                    minimum: 0
+                  credits:
+                    description: Number of credits the user has
+                    type: number
+                    minimum: 0
+                required:
+                  - phone
+                  - admin
+                  - whitelisted
+                  - credits
+            required:
+              - success
+              - user

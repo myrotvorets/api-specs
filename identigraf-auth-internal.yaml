@@ -174,3 +174,63 @@ paths:
 
         "200":
           $ref: "#/components/responses/checkCredits"
+
+  /checkphone:
+    post:
+      summary: Check phone number
+      tags:
+        - IDentigraF Internal Authentication API
+      requestBody:
+        $ref: "identigraf-auth-common.yaml#/components/requestBodies/checkPhone"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "429":
+          description: Too Many Requests
+          content:
+            application/json:
+              example:
+                success: false
+                status: 429
+                code: OUT_OF_CREDITS
+                message: You have run out of credits
+              schema:
+                type: object
+                properties:
+                  success:
+                    description: Marks the operation as failed
+                    type: boolean
+                    enum: [false]
+                  status:
+                    description: HTTP status code
+                    type: number
+                    enum: [429]
+                  code:
+                    description: Error code
+                    type: string
+                    enum: [OUT_OF_CREDITS]
+                  message:
+                    description: Error description
+                    type: string
+                required:
+                  - success
+                  - status
+                  - code
+                  - message
+          headers:
+            X-RateLimit-Limit:
+              description: The number of credits in the current period
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: The number of remaining credits in the current period
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: The number of seconds left in the current period
+              schema:
+                type: integer
+
+        "200":
+          $ref: "identigraf-auth-common.yaml#/components/responses/checkPhoneSucceeded"
