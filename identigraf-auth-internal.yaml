@@ -68,7 +68,6 @@ paths:
   /session:
     post:
       summary: Start session
-      description: This is an internal API endpoint, it cannot be invoked from the outside. Please use `POST /login` instead.
       tags:
         - IDentigraF Internal Authentication API
       requestBody:
@@ -80,9 +79,15 @@ paths:
                 uid:
                   description: Firebase User ID
                   type: string
+                  minLength: 1
+                  maxLength: 128
                 phone:
                   description: Phone number
                   type: string
+                  pattern: "^\\+380[0-9]{9}$"
+              required:
+                - uid
+                - phone
       responses:
         default:
           $ref: "generic-responses.yaml#/components/responses/error_generic"
@@ -100,7 +105,6 @@ paths:
   /track:
     post:
       summary: Track search or compare operation
-      description: This is an internal API endpoint, it cannot be invoked from the outside.
       tags:
         - IDentigraF Internal Tracking API
       requestBody:
@@ -128,9 +132,11 @@ paths:
                 phone:
                   description: Phone number
                   type: string
+                  pattern: "^\\+[0-9]{7,16}$"
                 ips:
-                  description: IP dddresses
+                  description: IP addresses
                   type: array
+                  minItems: 1
                   items:
                     type: string
                     oneOf:
@@ -139,6 +145,7 @@ paths:
                 dt:
                   description: Timestamp (number of seconds since the Epoch)
                   type: number
+                  minimum: 1392854400
               required:
                 - type
                 - guid
