@@ -18,9 +18,205 @@ components:
       bearerFormat: JWT
       type: http
       scheme: bearer
+    myrotvorets-jwt:
+      description: Myrotvorets JWT
+      bearerFormat: JWT
+      type: http
+      scheme: bearer
     internal:
       type: http
       scheme: internal
+
+  parameters:
+    searchPhoneNumber:
+      description: Partial phone number
+      name: phone
+      required: false
+      in: query
+      schema:
+        type: string
+    searchComment:
+      description: Partial comment
+      name: comment
+      required: false
+      in: query
+      schema:
+        type: string
+    searchUserSort:
+      description: Field to sort the result by
+      name: sort
+      required: false
+      in: query
+      schema:
+        type: string
+        enum:
+          - id
+          - whitelisted
+          - phone
+          - lastseen
+        default: id
+    sortOrder:
+      description: "Sort order: `ASC` = ascending, `DESC` = descending"
+      name: order
+      required: false
+      in: query
+      schema:
+        type: string
+        enum:
+          - asc
+          - ASC
+          - desc
+          - DESC
+        default: ASC
+    queryOffset:
+      description: Pagination - offset
+      name: offset
+      required: false
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    queryLimit:
+      description: Pagination - number of results to return
+      name: limit
+      required: false
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+    userID:
+      description: ID of the user
+      name: id
+      required: true
+      in: path
+      schema:
+        type: integer
+        minimum: 1
+
+  examples:
+    patchUserRequestBody:
+      description: Sample request body for the `PATCH /users/{id}` request
+      value:
+        whitelisted: 10
+        comment: A whitelisted user
+
+  requestBodies:
+    patchUser:
+      description: Request body for the `PATCH /users/{id}` request
+      content:
+        application/json:
+          examples:
+            requestBody:
+              $ref: '#/components/examples/patchUserRequestBody'
+          schema:
+            type: object
+            properties:
+              whitelisted:
+                description: Zero if the user is not whitelisted; otherwise, the number of credits assigned on each renewal
+                type: integer
+                minimum: 0
+                maximum: 100000
+              admin:
+                description: Whether the user is the administrator
+                type: boolean
+              credits:
+                description: Number of available credits
+                type: integer
+                minimum: 0
+                maximum: 100000
+              comment:
+                description: Free form comment
+                type: string
+            additionalProperties: false
+
+  schemas:
+    UserObject:
+      description: Internal representation of a user
+      type: object
+      properties:
+        id:
+          description: ID of the user
+          type: integer
+          minimum: 1
+        uid:
+          description: Internal user ID in the authentication backend
+          type: string
+        phone:
+          description: Phone number
+          type: string
+          pattern: "^\\+380[0-9]{9}$"
+        admin:
+          description: Whether the user is the administrator (non-zero value)
+          type: integer
+          minimum: 0
+        whitelisted:
+          description: Number of credits assigned during renewals
+          type: integer
+          minimum: 0
+          maximum: 100000
+        credits:
+          description: Number of credits the user currently has
+          type: integer
+          minimum: 0
+          maximum: 100000
+        lastseen:
+          description: Last login date (YYYYMMDD)
+          type: integer
+        comment:
+          description: Comment
+          type: string
+      required:
+        - id
+        - uid
+        - phone
+        - admin
+        - whitelisted
+        - credits
+        - lastseen
+        - comment
+
+  responses:
+    ListUsersResponse:
+      description: List users response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                description: Operation status (success)
+                type: boolean
+                enum:
+                  - true
+              users:
+                description: List of users
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserObject"
+            required:
+              - success
+              - users
+
+    GetUserResponse:
+      description: Get users response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                description: Operation status (success)
+                type: boolean
+                enum:
+                  - true
+              user:
+                $ref: "#/components/schemas/UserObject"
+            required:
+              - success
+              - users
 
 paths:
   /login:
@@ -50,7 +246,6 @@ paths:
               schema:
                 $ref: "identigraf-auth-common.yaml#/components/schemas/startSessionResponse"
 
-
   /checkphone:
     post:
       summary: Check phone number
@@ -75,3 +270,65 @@ paths:
         "200":
           $ref: "identigraf-auth-common.yaml#/components/responses/checkPhoneSucceeded"
 
+  /users:
+    get:
+      summary: Get user list
+      tags:
+        - IDentigraF User API
+      security:
+        - myrotvorets-jwt: []
+      parameters:
+        - $ref: "#/components/parameters/searchPhoneNumber"
+        - $ref: "#/components/parameters/searchComment"
+        - $ref: "#/components/parameters/searchUserSort"
+        - $ref: "#/components/parameters/sortOrder"
+        - $ref: "#/components/parameters/queryOffset"
+        - $ref: "#/components/parameters/queryLimit"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "429":
+          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+
+        "200":
+          $ref: "#/components/responses/ListUsersResponse"
+
+  /users/{userID}:
+    get:
+      summary: Get user by ID
+      tags:
+        - IDentigraF User API
+      security:
+        - myrotvorets-jwt: []
+      parameters:
+        - $ref: "#/components/parameters/userID"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "429":
+          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+
+        "200":
+          $ref: "#/components/responses/GetUserResponse"
+
+    patch:
+      summary: Update the specified user
+      tags:
+        - IDentigraF User API
+      security:
+        - myrotvorets-jwt: []
+      parameters:
+        - $ref: "#/components/parameters/userID"
+      requestBody:
+        $ref: "#/components/requestBodies/patchUser"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "429":
+          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+
+        "200":
+          $ref: "#/components/responses/GetUserResponse"
