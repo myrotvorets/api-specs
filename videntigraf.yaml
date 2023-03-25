@@ -1,0 +1,247 @@
+openapi: '3.0.3'
+
+info:
+  title: VIDentigraF
+  description: VIDentigraF API
+  version: 1.0.0
+  contact:
+    email: support@myrotvorets.center
+
+servers:
+  - url: /videntigraf/v1
+    description: This server
+  - url: /
+    description: Microservice server URL
+
+components:
+  securitySchemes:
+    bearer-token:
+      description: Firebase JWT
+      bearerFormat: JWT
+      type: http
+      scheme: bearer
+
+paths:
+  /process:
+    post:
+      summary: Upload a video
+      tags:
+        - VIDentigraF API
+      security:
+        - bearer-token: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video:
+                  type: string
+                  format: binary
+              required:
+                - video
+              additionalProperties: false
+            encoding:
+              video:
+                contentType: application/octet-stream, video/*
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "401":
+          $ref: "generic-responses.yaml#/components/responses/not-authorized"
+
+        "403":
+          $ref: "generic-responses.yaml#/components/responses/forbidden"
+
+        "429":
+          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              example:
+                success: true
+                guid: "00000000-0000-0000-0000-000000000000"
+              schema:
+                  type: object
+                  description: Response
+                  properties:
+                    success:
+                      description: Denotes the successful response
+                      type: boolean
+                      enum: [true]
+                    guid:
+                      description: Operation GUID (to be used with `status` API)
+                      type: string
+                      pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+                  required:
+                    - success
+                    - guid
+
+  /process/{guid}:
+    get:
+      summary: Retrieve processing status
+      tags:
+        - VIDentigraF API
+      security:
+        - bearer-token: []
+        - {}
+      parameters:
+        - name: guid
+          description: Operation GUID returned by `/process` API
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "403":
+          $ref: "generic-responses.yaml#/components/responses/forbidden"
+
+        "429":
+          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: Search is in progress
+                    properties:
+                      success:
+                        type: boolean
+                        enum: [true]
+                      status:
+                        type: string
+                        enum: ['inprogress']
+                    required:
+                      - success
+                      - status
+                  - type: object
+                    description: Search completed
+                    properties:
+                      success:
+                        type: boolean
+                        enum: [true]
+                      status:
+                        type: string
+                        enum: ['complete']
+                      stats:
+                        type: object
+                        description: Statistics
+                        properties:
+                          detections:
+                            type: integer
+                            description: Number of faces detected
+                            minimum: 0
+                          matches:
+                            type: integer
+                            description: Number of faces matched
+                            minimum: 0
+                          d_archives:
+                            type: integer
+                            description: Number of archives with detected faces
+                            minimum: 0
+                          m_archives:
+                            type: integer
+                            description: Number of archives with matched faces
+                            minimum: 0
+                        required:
+                          - detections
+                          - matches
+                          - d_archives
+                          - m_archives
+                    required:
+                      - success
+                      - status
+                      - stats
+
+  /process/{guid}/detections/{archive}:
+    get:
+      summary: Retrieve captured faces
+      tags:
+        - VIDentigraF API
+      security:
+        - bearer-token: []
+        - {}
+      parameters:
+        - name: guid
+          description: Operation GUID returned by `/process` API
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+        - name: archive
+          description: Archive number
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "403":
+          $ref: "generic-responses.yaml#/components/responses/forbidden"
+
+        "429":
+          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+
+        "200":
+          description: Successful response
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: byte
+
+  /process/{guid}/matches/{archive}:
+    get:
+      summary: Retrieve matched faces
+      tags:
+        - IDentigraF API
+      security:
+        - bearer-token: []
+        - {}
+      parameters:
+        - name: guid
+          description: Operation GUID returned by `/process` API
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+        - name: archive
+          description: Archive number
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+        "403":
+          $ref: "generic-responses.yaml#/components/responses/forbidden"
+
+        "429":
+          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+
+        "200":
+          description: Successful response
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: byte
