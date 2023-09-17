@@ -1,0 +1,614 @@
+openapi: "3.0.3"
+
+info:
+  title: Photos Microservice
+  description: Retrieves suspects' photos; the microservice is designed to be used by FaceX-related infrastructure
+  version: 1.0.0
+  contact:
+    email: support@myrotvorets.center
+
+servers:
+  - url: /photos/v2
+    description: This server
+
+components:
+  parameters:
+    after:
+      name: after
+      description: Suspect ID. Only records with ID greater than this one will be returned
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int64
+        minimum: 0
+
+    count:
+      name: count
+      description: Number of records to return
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int32
+        minimum: 1
+        maximum: 100
+
+    att_id:
+      name: id
+      description: Attachment ID
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int64
+        minimum: 1
+
+    cid:
+      name: id
+      description: Suspect ID
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int64
+        minimum: 1
+
+    sync_id:
+      name: id
+      description: Sync entry ID
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int64
+        minimum: 1
+
+  securitySchemes:
+    photos-auth:
+      description: Short-lived JSON Web Token
+      type: http
+      scheme: bearer
+
+  examples:
+    badRequest:
+      summary: Bad request
+      description: Bad request
+      value:
+        success: false
+        status: 400
+        code: BAD_REQUEST
+        message: Request validation failed
+
+    getSuspectsIDs:
+      summary: Successful response
+      description: Example of a successful response
+      value:
+        success: true
+        ids:
+          - 62
+          - 65
+          - 80
+          - 107
+          - 112
+
+    getSuspectPhotos:
+      summary: Successful reponse
+      description: Example of a successful response
+      value:
+        success: true
+        photos:
+          - att_id: 66
+            url: https://cdn.myrotvorets.center/m/criminals/00/00/41/Akhimedov.jpg
+            mime_type: image/jpeg
+
+  schemas:
+    badRequestResponse:
+      description: |
+        Bad request: parameters passed to the API fail validation
+      type: object
+      properties:
+        success:
+          description: Operation status, always `false`
+          type: boolean
+          enum: [false]
+        status:
+          description: HTTP error code
+          type: number
+          enum: [400]
+        code:
+          description: |
+            Error code:
+              * `BAD_REQUEST`: request validation failed
+          type: string
+        message:
+          description: Error description
+          type: string
+        errors:
+          description: Additional information (typically present for validation errors)
+          type: array
+          items:
+            type: object
+            properties:
+              path:
+                description: Place where the error occurred
+                type: string
+              message:
+                description: Detailed description
+                type: string
+              error_code:
+                description: Error code
+                type: string
+            required:
+              - path
+              - message
+      required:
+        - success
+        - status
+        - code
+        - message
+
+    getSuspectsIDsResponse:
+      description: Response object
+      type: object
+      properties:
+        success:
+          description: Whether the operation has succeeded (always `true`)
+          type: boolean
+          enum:
+            - true
+        ids:
+          description: Suspects IDs
+          type: array
+          items:
+            type: number
+            format: int32
+            minimum: 1
+      required:
+        - success
+        - ids
+
+    getSuspectPhotosResponse:
+      description: Response object
+      type: object
+      properties:
+        success:
+          description: Whether the operation has succeeded (always `true`)
+          type: boolean
+          enum:
+            - true
+        photos:
+          description: Suspects IDs
+          type: array
+          items:
+            type: object
+            properties:
+              att_id:
+                description: Attachment ID
+                type: number
+                format: int64
+                minimum: 1
+              url:
+                description: Photo URL
+                type: string
+                format: uri
+              mime_type:
+                description: MIME type of the photo
+                type: string
+            required:
+              - att_id
+              - url
+              - mime_type
+      required:
+        - success
+        - photos
+
+    syncResponse:
+      description: Response object
+      type: object
+      properties:
+        success:
+          description: Whether the operation has succeeded (always `true`)
+          type: boolean
+          enum:
+            - true
+        payload:
+          description: Response payload
+          type: object
+          properties:
+            id:
+              description: Entry ID
+              type: number
+              format: int64
+              minimum: 1
+            att_id:
+              description: ID of the attachment
+              type: number
+              format: int64
+              minimum: 1
+            suspect_id:
+              description: ID of the related suspect's record
+              type: number
+              format: int64
+              minimum: 1
+            path:
+              description: Relative path of the photo
+              type: string
+            flag:
+              description: |
+                Action to take:
+                  * 0: add this photo to FaceX
+                  * 1: delete this photo from FaceX
+                  * 2: photo failed to add
+                  * 3: photo failed to remove
+              type: number
+              enum: [0, 1, 2, 3]
+            image:
+              description: Photo to add
+              type: string
+              nullable: true
+          required:
+            - id
+            - att_id
+            - suspect_id
+            - path
+            - flag
+            - image
+      required:
+        - success
+        - payload
+
+    setSyncStatusRequest:
+      description: Request body for "Set sync status"
+      type: object
+      properties:
+        success:
+          description: Whether synchronization was successful
+          type: boolean
+      required:
+        - success
+      additionalProperties: false
+
+paths:
+  /suspects/{after}/{count}:
+    get:
+      summary: Get the list of suspects IDs with photos
+      description: |
+        Retrieves up to `:count` IDs of suspects with photos; IDs of the suspects are in the ascending order.
+        Only IDs greater than `:after` are returned
+      tags:
+        - Photos
+      parameters:
+        - $ref: "#/components/parameters/after"
+        - $ref: "#/components/parameters/count"
+      security:
+        - photos-auth: []
+      responses:
+        default:
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
+
+        "400":
+          description: Bad request — request validation failed
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  $ref: "#/components/examples/badRequest"
+              schema:
+                $ref: "#/components/schemas/badRequestResponse"
+
+        "401":
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
+
+        "429":
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
+
+        "502":
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response; returns an array (possibly empty) of suspects IDs
+          content:
+            "application/json":
+              examples:
+                getSuspectsIDs:
+                  $ref: "#/components/examples/getSuspectsIDs"
+              schema:
+                $ref: "#/components/schemas/getSuspectsIDsResponse"
+
+  /suspects/{id}:
+    get:
+      summary: Get the list of suspect's photos
+      description: Retrieves the list of suspect's photos (only `image/*` attachments are returned)
+      tags:
+        - Photos
+      parameters:
+        - $ref: "#/components/parameters/cid"
+      security:
+        - photos-auth: []
+      responses:
+        default:
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
+
+        "400":
+          description: Bad request — request validation failed
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  $ref: "#/components/examples/badRequest"
+              schema:
+                $ref: "#/components/schemas/badRequestResponse"
+
+        "401":
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
+
+        "429":
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
+
+        "502":
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response
+          content:
+            "application/json":
+              examples:
+                getSuspectPhotos:
+                  $ref: "#/components/examples/getSuspectPhotos"
+              schema:
+                $ref: "#/components/schemas/getSuspectPhotosResponse"
+
+  /{id}:
+    get:
+      summary: Get photo by ID
+      description: Retrieves a photo by ID. Returns a 404 error if the photo cannot be retrieved
+      tags:
+        - Photos
+      parameters:
+        - $ref: "#/components/parameters/att_id"
+      security:
+        - photos-auth: []
+      responses:
+        default:
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
+
+        "400":
+          description: Bad request — request validation failed
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  $ref: "#/components/examples/badRequest"
+              schema:
+                $ref: "#/components/schemas/badRequestResponse"
+
+        "401":
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
+
+        "429":
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
+
+        "502":
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response
+          content:
+            "image/*":
+              schema:
+                type: string
+                format: binary
+
+  /{id}/facex:
+    get:
+      summary: Get photo by ID in the format suitable for FaceX
+      description: |
+        Retrieves a photo by ID as a non-interlaced JPEG with 4:2:0 chroma subsampling.
+        Returns a 404 error if the photo cannot be retrieved, contains errors, or cannot be converted into the format suitable for FaceX
+      tags:
+        - Photos
+      parameters:
+        - $ref: "#/components/parameters/att_id"
+      security:
+        - photos-auth: []
+      responses:
+        default:
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
+
+        "400":
+          description: Bad request — request validation failed
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  $ref: "#/components/examples/badRequest"
+              schema:
+                $ref: "#/components/schemas/badRequestResponse"
+
+        "401":
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
+
+        "429":
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
+
+        "502":
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response
+          content:
+            "image/jpeg":
+              schema:
+                type: string
+                format: binary
+
+  /sync:
+    get:
+      summary: Get next entry to sync with FaceX
+      description: |
+        Retrieves an entry for the log of the changed photos. If the photo is to be added to FaceX,
+        converts it into the suitable format.
+      tags:
+        - Photos
+      security:
+        - photos-auth: []
+      responses:
+        default:
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
+
+        "400":
+          description: Bad request — request validation failed
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  $ref: "#/components/examples/badRequest"
+              schema:
+                $ref: "#/components/schemas/badRequestResponse"
+
+        "401":
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
+
+        "429":
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
+
+        "502":
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/syncResponse"
+
+        "204":
+          description: No entries to sync
+
+  /sync/{id}:
+    put:
+      summary: Set sync status for the given entry
+      description: Marks the entry in the sync log as succeeded ot failed
+      tags:
+        - Photos
+      parameters:
+        - $ref: '#/components/parameters/sync_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/setSyncStatusRequest'
+      security:
+        - photos-auth: []
+      responses:
+        default:
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
+
+        "400":
+          description: Bad request — request validation failed
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  $ref: "#/components/examples/badRequest"
+              schema:
+                $ref: "#/components/schemas/badRequestResponse"
+
+        "401":
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
+
+        "429":
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
+
+        "502":
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
+
+        "204":
+          description: Status logged
+
+  /sync/suspects/{after}/{count}:
+    get:
+      summary: Get the list of IDs of the suspects which need to be synced in FaceX
+      description: |
+        Retrieves up to `:count` IDs of the suspects; IDs of the suspects are in the ascending order.
+        Only IDs greater than `:after` are returned
+      tags:
+        - Photos
+      parameters:
+        - $ref: "#/components/parameters/after"
+        - $ref: "#/components/parameters/count"
+      security:
+        - photos-auth: []
+      responses:
+        default:
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
+
+        "400":
+          description: Bad request — request validation failed
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  $ref: "#/components/examples/badRequest"
+              schema:
+                $ref: "#/components/schemas/badRequestResponse"
+
+        "401":
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
+
+        "429":
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
+
+        "502":
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
+
+        "200":
+          description: Successful response; returns an array (possibly empty) of suspects IDs
+          content:
+            "application/json":
+              examples:
+                getSuspectsIDs:
+                  $ref: "#/components/examples/getSuspectsIDs"
+              schema:
+                $ref: "#/components/schemas/getSuspectsIDsResponse"
+
+  /sync/suspects/{id}:
+    delete:
+      description: Marks the suspect as synchronized with FaceX
+      tags:
+        - Photos
+      parameters:
+        - $ref: "#/components/parameters/cid"
+      security:
+        - photos-auth: []
+      responses:
+        default:
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
+
+        "400":
+          description: Bad request — request validation failed
+          content:
+            application/json:
+              examples:
+                badRequest:
+                  $ref: "#/components/examples/badRequest"
+              schema:
+                $ref: "#/components/schemas/badRequestResponse"
+
+        "401":
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
+
+        "429":
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
+
+        "502":
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
+
+        "204":
+          description: Successful response
+
+tags:
+  - name: Photos
+    description: Photo Retrieval API
