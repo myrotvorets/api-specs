@@ -1,0 +1,142 @@
+components:
+  examples:
+    countryResponseBody:
+      description: Sample response for the `/country` endpoint.
+      value:
+        success: true
+        response:
+          country: Ukraine
+          cc: UA
+
+    geolocateResponseBody:
+      description: Sample response for the `/geolocate` endpoint.
+      value:
+        success: true
+        response:
+          cc: US
+          country: United States
+          city: Bowling Green
+          id: 5147968
+          asn: 55194
+          asnOrg: Bowling Green State University
+          isp: Bowling Green State University
+          org: Bowling Green State University
+          cprefix: 24
+          iprefix: 24
+
+  parameters:
+    ip:
+      name: ip
+      in: path
+      required: true
+      description: IP address.
+      schema:
+        type: string
+        oneOf:
+          - format: ipv4
+          - format: ipv6
+
+  schemas:
+    countryResponseBody:
+      type: object
+      properties:
+        success:
+          $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+        response:
+          description: Geolocation response.
+          type: object
+          properties:
+            country:
+              description: Country name.
+              type: string
+              nullable: true
+              example: Ukraine
+            cc:
+              description: Country code.
+              type: string
+              nullable: true
+              example: UA
+          required:
+            - country
+            - cc
+      required:
+        - success
+        - response
+
+    geolocateResponseBody:
+      type: object
+      properties:
+        success:
+          $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+        response:
+          description: Geolocation response.
+          type: object
+          properties:
+            country:
+              description: Country matching the IP address.
+              type: string
+              nullable: true
+              example: United States
+            cc:
+              description: Country code matching the IP address.
+              type: string
+              nullable: true
+              example: US
+            city:
+              description: City matching the IP address.
+              type: string
+              nullable: true
+              example: Bowling Green
+            id:
+              description: Internal location ID.
+              type: number
+              format: int64
+              minimum: 1
+              nullable: true
+              example: 5147968
+            asn:
+              description: AS Number.
+              type: number
+              format: int32
+              minimum: 1
+              nullable: true
+              example: 55194
+            asnOrg:
+              description: ASN Organization.
+              type: string
+              nullable: true
+              example: Bowling Green State University
+            isp:
+              description: ISP matching the IP address.
+              type: string
+              nullable: true
+              example: Bowling Green State University
+            org:
+              description: Organization matching the IP address.
+              type: string
+              nullable: true
+              example: Bowling Green State University
+            cprefix:
+              description: IP address prefix length for the country/city part of the response.
+              type: number
+              format: int32
+              example: 24
+            iprefix:
+              description: IP address prefix length for the ISP/ASN/organization part of the response.
+              type: number
+              format: int32
+              example: 24
+          required:
+            - country
+            - cc
+            - city
+            - id
+            - asnOrg
+            - asn
+            - isp
+            - org
+            - cprefix
+            - iprefix
+      required:
+        - success
+        - response

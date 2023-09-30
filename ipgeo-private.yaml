@@ -7,10 +7,8 @@ info:
     email: support@myrotvorets.center
 
 servers:
-  - url: /ipgeo/v2
+  - url: /
     description: This server
-  - url: https://api.myrotvorets.center/ipgeo/v2
-    description: Production server
 
 paths:
   /country:
@@ -30,8 +28,6 @@ paths:
                 $ref: "ipgeo-common.yaml#/components/schemas/countryResponseBody"
         default:
           $ref: "generic-responses.yaml#/components/responses/error_generic"
-        "429":
-          $ref: "generic-responses.yaml#/components/responses/rate-limit"
 
   /geolocate/{ip}:
     get:
@@ -52,5 +48,3 @@ paths:
                 $ref: "ipgeo-common.yaml#/components/schemas/geolocateResponseBody"
         default:
           $ref: "generic-responses.yaml#/components/responses/error_generic"
-        "429":
-          $ref: "generic-responses.yaml#/components/responses/rate-limit"
