@@ -1,0 +1,157 @@
+components:
+  parameters:
+    suspectName:
+      name: "s"
+      description: |
+        Suspect's name. Must consist of at least two tokens (surname and name) separated with a space. The value is handled as follows:
+          * all characters which are not [letters](https://en.wikipedia.org/wiki/Unicode_character_property#General_Category) are replaced with a space;
+          * consecutive space charecters are collapsed;
+          * duplicate tokens are discarded.
+      in: query
+      required: true
+      schema:
+        type: string
+        minLength: 5
+
+  examples:
+    searchSuccess:
+      summary: Successful search response with results.
+      description: Example of a successful response, with one record.
+      value:
+        success: true
+        items:
+          - id: 14145
+            name: Путин Владимир Владимирович
+            nname: Путін Володимир Володимирович
+            link: https://myrotvorets.center/criminal/putin-vladimir-vladimirovich/
+            description: "<p><strong>Террорист №1</strong><br />\n<strong>Российский военный преступник</strong><br />\n<strong>Позывной: ХУЙЛО</strong></p>\n<p>Будучи на посту президента россии, развязал российско-украинскую войну 2014 года. По его вине погибли тысячи граждан Украины и уничтожена промышленная инфраструктура нескольких регионов.</p>\n<p>Ранее по его приказу были уничтожены десятки тысяч граждан россии в ходе первой и второй Чеченской войн.</p>\n<p>Соучастник преступлений против народа Грузии в ходе российско-грузинской войны 2008 года.  В этот период он занимал пост Премьер-министра РФ, хотя на практике, разработкой плана вторжения и оккупации Южной Осетии занимался лично.</p>\n<p>Дата рождения: 07.10.1952<br />\nМесто рождения: Ленинград, РСФСР, СССР</p>\n<p>Разведен. Двое детей - Мария, которая родилась в 1985-м году в Ленинграде, и Екатерина, родившаяся в 1986 году в Дрездене.<br />\nЗять по дочери Екатерине - российский олигарх Шамалов Кирилл. Шамалов женился на дочери Путина, Катерине Тихоновой, в феврале 2013 года, и его состояние в разы выросло вскоре после вступления в брак. За 18 месяцев он овладел крупной долей акций \"Сибура\" — российской компании, которая занимается разведкой, добычей и переработкой нефти и газа.</p>\n<p>&nbsp;</p>\n<p>#prez</p>\n"
+            dob: "1952-10-07"
+            country: Россия
+            address: г. Москва, Кремль
+            thumbnail: https://cdn.myrotvorets.center/m/criminals/00/37/41/1E76206_1-150x150.jpg
+
+    searchEmpty:
+      summary: Successful search response without results.
+      description: Example of a successful response, no items found.
+      value:
+        success: true
+        items: []
+
+    badRequest:
+      summary: Bad request.
+      description: Parameters passed to the API fail validation.
+      value:
+        success: false
+        status: 400
+        code: BAD_REQUEST
+        message: Request validation failed
+
+  schemas:
+    badRequestResponse:
+      description: |
+        Bad request: parameters passed to the API fail validation.
+      type: object
+      properties:
+        success:
+          description: Operation status, always `false`.
+          type: boolean
+          enum: [false]
+        status:
+          description: HTTP error code.
+          type: number
+          enum: [400]
+        code:
+          description: |
+            Error code:
+              * `BAD_REQUEST`: request validation failed;
+              * `BAD_SEARCH_TERM`: both name and surname are required.
+          type: string
+        message:
+          description: Error description.
+          type: string
+        errors:
+          description: Additional information (typically present for validation errors).
+          type: array
+          items:
+            type: object
+            properties:
+              path:
+                description: Place where the error occurred.
+                type: string
+              message:
+                description: Detailed description.
+                type: string
+              error_code:
+                description: Error code.
+                type: string
+            required:
+              - path
+              - message
+      required:
+        - success
+        - status
+        - code
+        - message
+
+    searchSuccessResponse:
+      description: Successful response.
+      type: object
+      properties:
+        success:
+          description: Whether the operation has succeeded (always `true`).
+          type: boolean
+          enum:
+            - true
+        items:
+          description: Search results.
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                description: Suspect's ID.
+                type: integer
+                format: int64
+                minimum: 1
+                example: 14145
+              link:
+                description: Link to the original record.
+                type: string
+                format: uri
+                example: https://myrotvorets.center/criminal/putin-vladimir-vladimirovich/
+              name:
+                description: Suspect's name (Russian).
+                type: string
+                example: Путин Владимир Владимирович
+              nname:
+                description: Suspect's name (Ukrainian / other language).
+                type: string
+                example: Путін Володимир Володимирович
+              dob:
+                description: Suspect's date of birth (YYYY-MM-DD).
+                type: string
+                format: date
+                example: "1952-10-07"
+              country:
+                description: Suspect's country.
+                type: string
+                example: Россия
+              address:
+                description: Suspect's address.
+                type: string
+                example: г. Москва
+              description:
+                description: Description of the crimes.
+                type: string
+                example: "<p><strong>Террорист №1</strong></p>"
+              thumbnail:
+                description: URL of the suspect's photo thumbnail.
+                type: string
+                format: uri
+                example: "https://cdn.myrotvorets.center/m/criminals/00/37/41/1E76206_1-150x150.jpg"
+            required:
+              - id
+              - name
+              - nname
+              - link
+              - description

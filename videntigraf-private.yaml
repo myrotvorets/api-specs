@@ -2,24 +2,14 @@ openapi: '3.0.3'
 
 info:
   title: VIDentigraF
-  description: VIDentigraF API
+  description: VIDentigraF Private API
   version: 1.0.0
   contact:
     email: support@myrotvorets.center
 
 servers:
-  - url: /videntigraf/v1
-    description: This server
-  - url: https://api2.myrotvorets.center/videntigraf/v1
-    description: Production server
-
-components:
-  securitySchemes:
-    identigraf-bearer-token:
-      description: IDentigraF JWT
-      bearerFormat: JWT
-      type: http
-      scheme: bearer
+  - url: /
+    description: Microservice server URL
 
 paths:
   /process:
@@ -28,17 +18,11 @@ paths:
       description: Upload the video and receive an operation GUID to use with other APIs.
       tags:
         - VIDentigraF API
-      security:
-        - identigraf-bearer-token: []
       requestBody:
         $ref: "videntigraf-common.yaml#/components/requestBodies/upload"
       responses:
         default:
           $ref: "generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "generic-responses.yaml#/components/responses/not-authorized"
-        "403":
-          $ref: "generic-responses.yaml#/components/responses/forbidden"
         "502":
           $ref: "generic-responses.yaml#/components/responses/bad-gateway"
         "200":
@@ -53,20 +37,14 @@ paths:
         - number of faces matched with existing records;
         - total number of archives with detected faces;
         - number of archives with matched faces.
-      operationId: getProcessingStatus
       tags:
         - VIDentigraF API
-      security:
-        - identigraf-bearer-token: []
+      operationId: getProcessingStatus
       parameters:
         - $ref: "videntigraf-common.yaml#/components/parameters/guid"
       responses:
         default:
           $ref: "generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "generic-responses.yaml#/components/responses/not-authorized"
-        "403":
-          $ref: "generic-responses.yaml#/components/responses/forbidden"
         "502":
           $ref: "generic-responses.yaml#/components/responses/bad-gateway"
         "200":
@@ -83,8 +61,6 @@ paths:
         Archives returned by this API need to be concatenated together.
       tags:
         - VIDentigraF API
-      security:
-        - identigraf-bearer-token: []
       operationId: getDetections
       parameters:
         - $ref: "videntigraf-common.yaml#/components/parameters/guid"
@@ -92,10 +68,6 @@ paths:
       responses:
         default:
           $ref: "generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "generic-responses.yaml#/components/responses/not-authorized"
-        "403":
-          $ref: "generic-responses.yaml#/components/responses/forbidden"
         "502":
           $ref: "generic-responses.yaml#/components/responses/bad-gateway"
         "200":
@@ -104,7 +76,7 @@ paths:
   /process/{guid}/matches/{archive}:
     get:
       summary: Retrieve an archive with matched faces
-      description: |
+      description: >
         This API retrieves the archive containing matched faces specified by the `{archive}` parameter for the video identified by the operation GUID.
 
         Valid values for {archive} range from 1 to `m_archives`, which is returned by the [`/process/{guid}`](#/VIDentigraF%20API/getProcessingStatus) API.
@@ -112,8 +84,6 @@ paths:
         Archives returned by this API need to be concatenated together.
       tags:
         - VIDentigraF API
-      security:
-        - identigraf-bearer-token: []
       operationId: getMatches
       parameters:
         - $ref: "videntigraf-common.yaml#/components/parameters/guid"
@@ -121,10 +91,6 @@ paths:
       responses:
         default:
           $ref: "generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "generic-responses.yaml#/components/responses/not-authorized"
-        "403":
-          $ref: "generic-responses.yaml#/components/responses/forbidden"
         "502":
           $ref: "generic-responses.yaml#/components/responses/bad-gateway"
         "200":
