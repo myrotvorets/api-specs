@@ -84,7 +84,7 @@ paths:
                 phone:
                   description: Phone number
                   type: string
-                  pattern: "^\\+380[0-9]{9}$"
+                  # pattern: "^\\+380[0-9]{9}$"
               required:
                 - uid
                 - phone
@@ -174,7 +174,7 @@ paths:
           schema:
             description: Phone number
             type: string
-            pattern: "^380[0-9]{9}$"
+            # pattern: "^380[0-9]{9}$"
       responses:
         default:
           $ref: "generic-responses.yaml#/components/responses/error_generic"
