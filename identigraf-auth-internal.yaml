@@ -132,7 +132,7 @@ paths:
                 phone:
                   description: Phone number
                   type: string
-                  pattern: "^\\+[0-9]{7,16}$"
+                  # pattern: "^\\+[0-9]{7,16}$"
                 ips:
                   description: IP addresses
                   type: array
