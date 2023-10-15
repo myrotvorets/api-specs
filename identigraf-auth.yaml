@@ -147,7 +147,7 @@ components:
         phone:
           description: Phone number
           type: string
-          pattern: "^\\+380[0-9]{9}$"
+          # pattern: "^\\+380[0-9]{9}$"
         admin:
           description: Whether the user is the administrator (non-zero value)
           type: integer
