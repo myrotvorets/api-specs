@@ -9,10 +9,8 @@ info:
     email: support@myrotvorets.center
 
 servers:
-  - url: /identigraf-decoder/v1
-    description: This server
-  - url: https://api2.myrotvorets.center/identigraf-decoder/v1
-    description: Production server
+  - url: /
+    description: Microservice server URL
 
 paths:
   /decode:
@@ -32,12 +30,6 @@ paths:
       responses:
         default:
           $ref: "generic-responses.yaml#/components/responses/error_generic"
-
-        "403":
-          $ref: "generic-responses.yaml#/components/responses/forbidden"
-
-        "429":
-          $ref: "generic-responses.yaml#/components/responses/rate-limit"
 
         "200":
           description: Successful response

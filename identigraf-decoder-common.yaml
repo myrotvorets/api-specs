@@ -1,0 +1,89 @@
+components:
+  examples:
+    decodeRequestBody:
+      description: Sample request body for the "decode" endpoint
+      value:
+        - "!1-0-80-84"
+        - "!1-0-189-195"
+        - "!1-0-80-0"
+
+    decodeResponseBody:
+      description: Successful response
+      value:
+        success: true
+        items:
+          "!1-0-80-84":
+            name: "Дронь Максим Викторович"
+            country: "Украина"
+            link: "https://myrotvorets.center/criminals/dron-maksim-viktorovich"
+            primaryPhoto: "https://cdn.myrotvorets.center/m/criminals/00/00/50/10690324_1471365143149229_5184721556318160454_n.jpg"
+            matchedPhoto: "https://cdn.myrotvorets.center/m/criminals/00/00/50/10622960_1471365106482566_2874558279694198564_n.jpg"
+          "!1-0-189-195":
+            name: "Колесник Алексей Анатольевич"
+            country: "Украина"
+            link: "https://myrotvorets.center/criminals/kolesnik-aleksej-anatolevich"
+            primaryPhoto: "https://cdn.myrotvorets.center/m/criminals/00/00/bd/10.jpg"
+            matchedPhoto: "https://cdn.myrotvorets.center/m/criminals/00/00/bd/16.jpg"
+          "!1-0-80-0":
+            name: "Дронь Максим Викторович"
+            country: "Украина"
+            link: "https://myrotvorets.center/criminals/dron-maksim-viktorovich"
+            primaryPhoto: "https://cdn.myrotvorets.center/m/criminals/00/00/50/10690324_1471365143149229_5184721556318160454_n.jpg"
+            matchedPhoto: null
+
+    decodeResponseBodyEmpty:
+      description: Successful result, but the system was unable to decode anything
+      value:
+        success: true
+        items: []
+
+  schemas:
+    decodeRequestBody:
+      type: array
+      items:
+        type: string
+        description: Object ID
+        example: "!1-0-80-0"
+      minItems: 1
+      maxItems: 100
+
+    decodeResponseBody:
+      type: object
+      properties:
+        success:
+          $ref: "generic-responses.yaml#/components/schemas/operationFailed"
+        items:
+          description: Decoded objects
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              name:
+                description: Object's name
+                type: string
+              country:
+                description: Object's country
+                type: string
+              link:
+                description: Link to the object
+                type: string
+                format: uri
+              primaryPhoto:
+                description: Object's primary photo
+                type: string
+                nullable: true
+                format: uri
+              matchedPhoto:
+                description: Matched photo
+                type: string
+                nullable: true
+                format: uri
+            required:
+              - name
+              - country
+              - link
+              - primaryPhoto
+              - matchedPhoto
+      required:
+        - success
+        - items
