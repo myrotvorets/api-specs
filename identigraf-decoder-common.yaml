@@ -51,7 +51,7 @@ components:
       type: object
       properties:
         success:
-          $ref: "generic-responses.yaml#/components/schemas/operationFailed"
+          $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
         items:
           description: Decoded objects
           type: object
