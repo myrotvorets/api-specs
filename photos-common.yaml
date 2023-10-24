@@ -1,0 +1,188 @@
+components:
+  parameters:
+    after:
+      name: after
+      description: Suspect ID. Only records with the ID greater than this one will be returned.
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int64
+        minimum: 0
+
+    count:
+      name: count
+      description: Number of records to return.
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int32
+        minimum: 1
+        maximum: 100
+
+    att_id:
+      name: id
+      description: Attachment ID.
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int64
+        minimum: 1
+
+    cid:
+      name: id
+      description: Suspect ID.
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int64
+        minimum: 1
+
+    sync_id:
+      name: id
+      description: Sync entry ID.
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int64
+        minimum: 1
+
+  examples:
+    getSuspectsIDs:
+      summary: Successful response.
+      description: Example of a successful response.
+      value:
+        success: true
+        ids:
+          - 62
+          - 65
+          - 80
+          - 107
+          - 112
+
+    getSuspectPhotos:
+      summary: Successful reponse.
+      description: Example of a successful response.
+      value:
+        success: true
+        photos:
+          - att_id: 66
+            url: https://cdn.myrotvorets.center/m/criminals/00/00/41/Akhimedov.jpg
+            mime_type: image/jpeg
+
+  schemas:
+    getSuspectsIDsResponse:
+      description: Response object
+      type: object
+      properties:
+        success:
+          $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+        ids:
+          description: Suspects IDs
+          type: array
+          items:
+            type: number
+            format: int32
+            minimum: 1
+      required:
+        - success
+        - ids
+
+    getSuspectPhotosResponse:
+      description: Response object
+      type: object
+      properties:
+        success:
+          $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+        photos:
+          description: Suspects IDs
+          type: array
+          items:
+            type: object
+            properties:
+              att_id:
+                description: Attachment ID
+                type: number
+                format: int64
+                minimum: 1
+              url:
+                description: Photo URL
+                type: string
+                format: uri
+              mime_type:
+                description: MIME type of the photo
+                type: string
+            required:
+              - att_id
+              - url
+              - mime_type
+      required:
+        - success
+        - photos
+
+    syncResponse:
+      description: Response object
+      type: object
+      properties:
+        success:
+          $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+        payload:
+          description: Response payload
+          type: object
+          properties:
+            id:
+              description: Entry ID
+              type: number
+              format: int64
+              minimum: 1
+            att_id:
+              description: ID of the attachment
+              type: number
+              format: int64
+              minimum: 1
+            suspect_id:
+              description: ID of the related suspect's record
+              type: number
+              format: int64
+              minimum: 1
+            path:
+              description: Relative path of the photo
+              type: string
+            flag:
+              description: |
+                Action to take:
+                  * 0: add this photo to FaceX
+                  * 1: delete this photo from FaceX
+                  * 2: photo failed to add
+                  * 3: photo failed to remove
+              type: number
+              enum: [0, 1, 2, 3]
+            image:
+              description: Photo to add
+              type: string
+              nullable: true
+          required:
+            - id
+            - att_id
+            - suspect_id
+            - path
+            - flag
+            - image
+      required:
+        - success
+        - payload
+
+    setSyncStatusRequest:
+      description: Request body for "Set sync status"
+      type: object
+      properties:
+        success:
+          description: Whether synchronization was successful
+          type: boolean
+      required:
+        - success
+      additionalProperties: false

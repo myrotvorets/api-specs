@@ -2,23 +2,14 @@ openapi: "3.0.3"
 
 info:
   title: Photos Microservice
-  description: FaceX Photo API. The microservice is designed to be used by FaceX-related infrastructure
+  description: FaceX Photo API; the microservice is designed to be used by the FaceX-related infrastructure.
   version: 1.0.0
   contact:
     email: support@myrotvorets.center
 
 servers:
-  - url: /photos/v2
-    description: This server
-  - url: https://api2.myrotvorets.center/photos/v2
-    description: Production server
-
-components:
-  securitySchemes:
-    photos-auth:
-      description: Short-lived JSON Web Token.
-      type: http
-      scheme: bearer
+  - url: /
+    description: Microservice server URL
 
 paths:
   /suspects/{after}/{count}:
@@ -32,15 +23,9 @@ paths:
       parameters:
         - $ref: "photos-common.yaml#/components/parameters/after"
         - $ref: "photos-common.yaml#/components/parameters/count"
-      security:
-        - photos-auth: []
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
-        "502":
-          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
           description: Successful response; returns an array (possibly empty) of suspects IDs
           content:
@@ -53,21 +38,15 @@ paths:
 
   /suspects/{id}:
     get:
-      summary: Get the list of suspect's photos
-      description: Retrieves the list of suspect's photos (only `image/*` attachments are returned)
+      summary: Get the list of suspect's photos.
+      description: Retrieves the list of suspect's photos (only `image/*` attachments are returned).
       tags:
         - Photos
       parameters:
         - $ref: "photos-common.yaml#/components/parameters/cid"
-      security:
-        - photos-auth: []
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
-        "502":
-          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
           description: Successful response
           content:
@@ -86,13 +65,9 @@ paths:
         - Photos
       parameters:
         - $ref: "photos-common.yaml#/components/parameters/att_id"
-      security:
-        - photos-auth: []
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
         "502":
           $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
@@ -114,13 +89,9 @@ paths:
         - Photos
       parameters:
         - $ref: "photos-common.yaml#/components/parameters/att_id"
-      security:
-        - photos-auth: []
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
         "502":
           $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
@@ -135,19 +106,13 @@ paths:
     get:
       summary: Get next entry to sync with FaceX
       description: |
-        Retrieves an entry for the log of the changed photos. If the photo is to be added to FaceX,
+        Retrieves an entry from the log of the changed photos. If the photo is to be added to FaceX,
         converts it into the suitable format.
       tags:
         - Photos
-      security:
-        - photos-auth: []
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
-        "502":
-          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
           description: Successful response
           content:
@@ -171,15 +136,9 @@ paths:
           application/json:
             schema:
               $ref: 'photos-common.yaml#/components/schemas/setSyncStatusRequest'
-      security:
-        - photos-auth: []
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
-        "502":
-          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "204":
           description: Status logged
 
@@ -194,15 +153,9 @@ paths:
       parameters:
         - $ref: "photos-common.yaml#/components/parameters/after"
         - $ref: "photos-common.yaml#/components/parameters/count"
-      security:
-        - photos-auth: []
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
-        "502":
-          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
           description: Successful response; returns an array (possibly empty) of suspects IDs
           content:
@@ -220,15 +173,9 @@ paths:
         - Photos
       parameters:
         - $ref: "photos-common.yaml#/components/parameters/cid"
-      security:
-        - photos-auth: []
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
-        "401":
-          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
-        "502":
-          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "204":
           description: Successful response
 
