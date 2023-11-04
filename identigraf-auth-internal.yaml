@@ -2,7 +2,7 @@ openapi: '3.0.3'
 
 info:
   title: IDentigraF Internal Authentication API
-  description: Authentication and Tracking Internal API for [IDentigraF](https://n.identigraf.center/). **This API is not exposed publicly**.
+  description: Authentication and Tracking Internal API for [IDentigraF](https://neuro.identigraf.center/). **This API is not exposed publicly**.
   version: 2.0.0
   contact:
     email: support@myrotvorets.center
@@ -26,9 +26,7 @@ components:
             type: object
             properties:
               success:
-                description: Denotes the successful response
-                type: boolean
-                enum: [true]
+                $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
               response:
                 type: object
                 properties:
@@ -56,9 +54,7 @@ components:
             type: object
             properties:
               success:
-                description: Denotes the successful response
-                type: boolean
-                enum: [true]
+                $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
               credits:
                 description: Number of remaining credits
                 type: number
@@ -77,10 +73,8 @@ paths:
               type: object
               properties:
                 uid:
-                  description: Firebase User ID
+                  description: External User ID
                   type: string
-                  minLength: 1
-                  maxLength: 128
                 phone:
                   description: Phone number
                   type: string
@@ -206,9 +200,7 @@ paths:
                 type: object
                 properties:
                   success:
-                    description: Marks the operation as failed
-                    type: boolean
-                    enum: [false]
+                    $ref: "generic-responses.yaml#/components/schemas/operationFailed"
                   status:
                     description: HTTP status code
                     type: number
@@ -241,3 +233,68 @@ paths:
 
         "200":
           $ref: "identigraf-auth-common.yaml#/components/responses/checkPhoneSucceeded"
+
+  /users/{id}:
+    get:
+      summary: Get user by ID.
+      tags:
+        - IDentigraF Internal User API
+      parameters:
+        - $ref: "identigraf-auth-common.yaml#/components/parameters/userID"
+      responses:
+        "200":
+          $ref: "identigraf-auth-common.yaml#/components/responses/getUserById"
+        "404":
+          $ref: "identigraf-auth-common.yaml#/components/responses/userNotFound"
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+    patch:
+      summary: Update user by ID.
+      tags:
+        - IDentigraF Internal User API
+      parameters:
+        - $ref: "identigraf-auth-common.yaml#/components/parameters/userID"
+      requestBody:
+        $ref: "identigraf-auth-common.yaml#/components/requestBodies/patchUser"
+      responses:
+        "200":
+          $ref: "identigraf-auth-common.yaml#/components/responses/getUserById"
+        "400":
+          $ref: "identigraf-auth-common.yaml#/components/responses/patchBadRequest"
+        "404":
+          $ref: "identigraf-auth-common.yaml#/components/responses/userNotFound"
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+    put:
+      summary: Update user by ID.
+      tags:
+        - IDentigraF Internal User API
+      parameters:
+        - $ref: "identigraf-auth-common.yaml#/components/parameters/userID"
+      requestBody:
+        $ref: "identigraf-auth-common.yaml#/components/requestBodies/updateUser"
+      responses:
+        "200":
+          $ref: "identigraf-auth-common.yaml#/components/responses/getUserById"
+        "404":
+          $ref: "identigraf-auth-common.yaml#/components/responses/userNotFound"
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+
+  /users:
+    get:
+      summary: Get user list.
+      tags:
+        - IDentigraF Internal User API
+      parameters:
+        - $ref: "identigraf-auth-common.yaml#/components/parameters/searchLogin"
+        - $ref: "identigraf-auth-common.yaml#/components/parameters/searchComment"
+        - $ref: "identigraf-auth-common.yaml#/components/parameters/searchUserSort"
+        - $ref: "identigraf-auth-common.yaml#/components/parameters/sortDirection"
+        - $ref: "identigraf-auth-common.yaml#/components/parameters/queryOffset"
+        - $ref: "identigraf-auth-common.yaml#/components/parameters/queryLimit"
+      responses:
+        "200":
+          $ref: "identigraf-auth-common.yaml#/components/responses/searchUsers"
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"

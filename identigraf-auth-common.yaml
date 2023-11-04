@@ -1,4 +1,76 @@
 components:
+  parameters:
+    userID:
+      name: id
+      description: User ID.
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int64
+        minimum: 1
+    searchLogin:
+      description: Partial user login.
+      name: login
+      in: query
+      required: false
+      schema:
+        type: string
+        default: ''
+    searchComment:
+      description: Partial comment.
+      name: comment
+      in: query
+      required: false
+      schema:
+        type: string
+        default: ''
+    searchUserSort:
+      description: Field to sort the result set by.
+      name: sort
+      required: false
+      in: query
+      schema:
+        type: string
+        enum:
+          - id
+          - login
+          - whitelisted
+          - lastseen
+        default: id
+    sortDirection:
+      description: "Sort order: `ASC` = ascending, `DESC` = descending"
+      name: order
+      required: false
+      in: query
+      schema:
+        type: string
+        enum:
+          - asc
+          - ASC
+          - desc
+          - DESC
+        default: ASC
+    queryOffset:
+      description: Pagination - offset
+      name: offset
+      required: false
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    queryLimit:
+      description: Pagination - number of results to return
+      name: count
+      required: false
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+
   examples:
     startSession:
       summary: Successful response
@@ -12,6 +84,16 @@ components:
           credits: 5
 
   schemas:
+    whitelisted:
+      description: Whether the user is whitelisted. Zero if not, positive number is the number of credits assigned on each renewal.
+      type: number
+      minimum: 0
+
+    credits:
+      description: Number of credits the user has.
+      type: number
+      minimum: 0
+
     startSessionResponse:
       description: Session has been started successfully
       type: object
@@ -32,13 +114,9 @@ components:
               type: number
               enum: [0, 1]
             whitelisted:
-              description: Whether the user is whitelisted. 0 if not, positive number is the number of credits
-              type: number
-              minimum: 0
+              $ref: "#/components/schemas/whitelisted"
             credits:
-              description: Number of credits the user has
-              type: number
-              minimum: 0
+              $ref: "#/components/schemas/credits"
           required:
             - phone
             - admin
@@ -47,6 +125,43 @@ components:
       required:
         - success
         - user
+
+    user:
+      description: User information
+      type: object
+      properties:
+        id:
+          description: User ID.
+          type: number
+        uid:
+          description: External User ID.
+          type: string
+        login:
+          description: User login.
+          type: string
+        admin:
+          description: Administrator flag.
+          type: number
+          enum: [0, 1]
+        whitelisted:
+          $ref: "#/components/schemas/whitelisted"
+        credits:
+          $ref: "#/components/schemas/credits"
+        lastseen:
+          description: Last seen date (YYYYMMDD).
+          type: number
+        comment:
+          description: Comment.
+          type: string
+      required:
+        - id
+        - uid
+        - login
+        - admin
+        - whitelisted
+        - credits
+        - lastseen
+        - comment
 
   requestBodies:
     checkPhone:
@@ -64,6 +179,54 @@ components:
                 # pattern: "^\\+380[0-9]{9}$"
             required:
               - phone
+
+    updateUser:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              login:
+                description: User login.
+                type: string
+              admin:
+                description: Administrator flag.
+                type: boolean
+              whitelisted:
+                $ref: "#/components/schemas/whitelisted"
+              credits:
+                $ref: "#/components/schemas/credits"
+              comment:
+                description: Comment.
+                type: string
+            required:
+              - login
+              - admin
+              - whitelisted
+              - credits
+              - comment
+
+    patchUser:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              login:
+                description: User login.
+                type: string
+              admin:
+                description: Administrator flag.
+                type: boolean
+              whitelisted:
+                $ref: "#/components/schemas/whitelisted"
+              credits:
+                $ref: "#/components/schemas/credits"
+              comment:
+                description: Comment.
+                type: string
 
   responses:
     checkPhoneSucceeded:
@@ -108,3 +271,123 @@ components:
             required:
               - success
               - user
+
+    getUserById:
+      description: Successful response.
+      content:
+        application/json:
+          example:
+            success: true
+            user:
+              id: 1
+              uid: uid1
+              login: someone@somewhere.com
+              admin: 0
+              whitelisted: 0
+              credits: 4
+              lastseen: 20201230
+              comment: ''
+          schema:
+            type: object
+            properties:
+              success:
+                $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+              user:
+                $ref: "#/components/schemas/user"
+
+    searchUsers:
+      description: Successful response.
+      content:
+        application/json:
+          example:
+            success: true
+            users:
+              - id: 1
+                uid: uid1
+                login: someone@somewhere.com
+                admin: 0
+                whitelisted: 0
+                credits: 10
+                lastseen: 20201230
+                comment: Comment
+            total: 1
+          schema:
+            type: object
+            properties:
+              success:
+                $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+              users:
+                description: List of the users.
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
+              total:
+                description: Total number of the users.
+                type: number
+                format: int64
+
+    userNotFound:
+      description: User not found.
+      content:
+        application/json:
+          example:
+            success: false
+            status: 404
+            code: USER_NOT_FOUND
+            message: User 11 not found
+          schema:
+            type: object
+            properties:
+              success:
+                $ref: "generic-responses.yaml#/components/schemas/operationFailed"
+              status:
+                description: HTTP status code.
+                type: number
+                enum:
+                  - 404
+              code:
+                description: Error code.
+                type: string
+                enum:
+                  - USER_NOT_FOUND
+              message:
+                description: Error description.
+                type: string
+            required:
+              - success
+              - status
+              - code
+              - message
+
+    patchBadRequest:
+      description: Bad request - missing a property to update.
+      content:
+        application/json:
+          example:
+            success: false
+            status: 400
+            code: BAD_PATCH
+            message: Need at least one property to update
+          schema:
+            type: object
+            properties:
+              success:
+                $ref: "generic-responses.yaml#/components/schemas/operationFailed"
+              status:
+                description: HTTP status code.
+                type: number
+                enum:
+                  - 400
+              code:
+                description: Error code.
+                type: string
+                enum:
+                  - BAD_PATCH
+              message:
+                description: Error description.
+                type: string
+            required:
+              - success
+              - status
+              - code
+              - message
