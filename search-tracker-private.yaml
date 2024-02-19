@@ -1,0 +1,94 @@
+openapi: "3.0.3"
+
+info:
+  title: Search Tracker API
+  description: Search Query Tracker (Private API)
+  version: 1.0.0
+  contact:
+    email: support@myrotvorets.center
+
+servers:
+  - url: /
+    description: Microservice server URL
+
+paths:
+  /track:
+    post:
+      summary: Track search query
+      tags:
+        - Search Tracker
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name
+                  type: string
+                  example: "Владимир Путин"
+                dob:
+                  description: Date of Birth
+                  type: string
+                  example: "1952-10-07"
+                country:
+                  description: Country
+                  type: string
+                  example: "RU"
+                address:
+                  description: Address
+                  type: string
+                  example: "Moscow, Russia"
+                phone:
+                  description: Phone
+                  type: string
+                  example: "+74951234567"
+                desc:
+                  description: Description
+                  type: string
+                  example: "Terrorist #1"
+                ra:
+                  description: Remote address
+                  type: string
+                  oneOf:
+                    - format: ipv4
+                    - format: ipv6
+                  example: "1.2.3.4"
+                ff:
+                  description: A comma-separated list of IPs from X-Forwarded-For or a similar header
+                  type: string
+                  example: "2.3.4.5,6.7.8.9"
+                tc:
+                  description: Tracking code
+                  type: string
+                  example: "0067337eac926087"
+                loc:
+                  description: Location ID
+                  type: number
+                  format: int32
+                  minimum: -1
+                src:
+                  description: Source ID
+                  type: number
+                  format: int32
+              required:
+                - name
+                - dob
+                - country
+                - address
+                - phone
+                - desc
+                - ra
+                - ff
+                - tc
+                - loc
+                - src
+      responses:
+        default:
+          $ref: "generic-responses.yaml#/components/responses/error_generic"
+        "204":
+          description: Search query has been logged.
+
+tags:
+  - name: Search Tracker
+    description: Search Query Tracker API
