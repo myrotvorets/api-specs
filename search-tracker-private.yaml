@@ -34,7 +34,7 @@ paths:
                 country:
                   description: Country
                   type: string
-                  example: "RU"
+                  example: "Россия"
                 address:
                   description: Address
                   type: string
@@ -66,11 +66,12 @@ paths:
                   description: Location ID
                   type: number
                   format: int32
-                  minimum: -1
+                  minimum: 0
                 src:
                   description: Source ID
                   type: number
                   format: int32
+                  minimum: 0
               required:
                 - name
                 - dob
