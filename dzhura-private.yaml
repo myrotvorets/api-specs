@@ -4,6 +4,9 @@ info:
   title: Search API for Dzhura
   description: Search [Myrotvorets Database](https://myrotvorets.center/criminal/)
   version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   contact:
     email: support@myrotvorets.center
 
@@ -18,31 +21,33 @@ paths:
       description: Search [Myrotvorets database](https://myrotvorets.center/criminal/). Given suspect's name, returns up to 15 results.
       tags:
         - Dzhura
+      security: []
+      operationId: search
       parameters:
-        - $ref: "dzhura-common.yaml#/components/parameters/suspectName"
+        - $ref: "./dzhura-common.yaml#/components/parameters/suspectName"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "200":
           description: Successful response. Return a (possibly empty) array of the matched records.
           content:
             "application/json":
               examples:
                 successFound:
-                  $ref: "dzhura-common.yaml#/components/examples/searchSuccess"
+                  $ref: "./dzhura-common.yaml#/components/examples/searchSuccess"
                 successEmpty:
-                  $ref: "dzhura-common.yaml#/components/examples/searchEmpty"
+                  $ref: "./dzhura-common.yaml#/components/examples/searchEmpty"
               schema:
-                $ref: "dzhura-common.yaml#/components/schemas/searchSuccessResponse"
+                $ref: "./dzhura-common.yaml#/components/schemas/searchSuccessResponse"
         "400":
           description: Bad request.
           content:
             application/json:
               examples:
                 badRequest:
-                  $ref: "dzhura-common.yaml#/components/examples/badRequest"
+                  $ref: "./dzhura-common.yaml#/components/examples/badRequest"
               schema:
-                $ref: "dzhura-common.yaml#/components/schemas/badRequestResponse"
+                $ref: "./dzhura-common.yaml#/components/schemas/badRequestResponse"
 
 tags:
   - name: Dzhura

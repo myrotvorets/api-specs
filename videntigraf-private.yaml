@@ -4,6 +4,9 @@ info:
   title: VIDentigraF
   description: VIDentigraF Private API
   version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   contact:
     email: support@myrotvorets.center
 
@@ -18,15 +21,17 @@ paths:
       description: Upload the video and receive an operation GUID to use with other APIs.
       tags:
         - VIDentigraF API
+      security: []
+      operationId: uploadVideo
       requestBody:
-        $ref: "videntigraf-common.yaml#/components/requestBodies/upload"
+        $ref: "./videntigraf-common.yaml#/components/requestBodies/upload"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "502":
-          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
-          $ref: "videntigraf-common.yaml#/components/responses/successfulUpload"
+          $ref: "./videntigraf-common.yaml#/components/responses/successfulUpload"
 
   /process/{guid}:
     get:
@@ -39,16 +44,17 @@ paths:
         - number of archives with matched faces.
       tags:
         - VIDentigraF API
+      security: []
       operationId: getProcessingStatus
       parameters:
-        - $ref: "videntigraf-common.yaml#/components/parameters/guid"
+        - $ref: "./videntigraf-common.yaml#/components/parameters/guid"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "502":
-          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
-          $ref: "videntigraf-common.yaml#/components/responses/processingStatus"
+          $ref: "./videntigraf-common.yaml#/components/responses/processingStatus"
 
   /process/{guid}/detections/{archive}:
     get:
@@ -61,17 +67,18 @@ paths:
         Archives returned by this API need to be concatenated together.
       tags:
         - VIDentigraF API
+      security: []
       operationId: getDetections
       parameters:
-        - $ref: "videntigraf-common.yaml#/components/parameters/guid"
-        - $ref: "videntigraf-common.yaml#/components/parameters/archive"
+        - $ref: "./videntigraf-common.yaml#/components/parameters/guid"
+        - $ref: "./videntigraf-common.yaml#/components/parameters/archive"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "502":
-          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
-          $ref: "videntigraf-common.yaml#/components/responses/zipArchive"
+          $ref: "./videntigraf-common.yaml#/components/responses/zipArchive"
 
   /process/{guid}/matches/{archive}:
     get:
@@ -84,14 +91,15 @@ paths:
         Archives returned by this API need to be concatenated together.
       tags:
         - VIDentigraF API
+      security: []
       operationId: getMatches
       parameters:
-        - $ref: "videntigraf-common.yaml#/components/parameters/guid"
-        - $ref: "videntigraf-common.yaml#/components/parameters/archive"
+        - $ref: "./videntigraf-common.yaml#/components/parameters/guid"
+        - $ref: "./videntigraf-common.yaml#/components/parameters/archive"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "502":
-          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
-          $ref: "videntigraf-common.yaml#/components/responses/zipArchive"
+          $ref: "./videntigraf-common.yaml#/components/responses/zipArchive"

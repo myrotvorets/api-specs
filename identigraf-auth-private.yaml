@@ -4,6 +4,9 @@ info:
   title: IDentigraF Internal Authentication API
   description: Authentication and Tracking Internal API for [IDentigraF](https://neuro.identigraf.center/). **This API is not exposed publicly**.
   version: 2.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   contact:
     email: support@myrotvorets.center
 
@@ -26,7 +29,7 @@ components:
             type: object
             properties:
               success:
-                $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+                $ref: "./generic-responses.yaml#/components/schemas/operationSucceeded"
               response:
                 type: object
                 properties:
@@ -54,7 +57,7 @@ components:
             type: object
             properties:
               success:
-                $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+                $ref: "./generic-responses.yaml#/components/schemas/operationSucceeded"
               credits:
                 description: Number of remaining credits
                 type: number
@@ -66,6 +69,8 @@ paths:
       summary: Start session
       tags:
         - IDentigraF Internal Authentication API
+      security: []
+      operationId: startSession
       requestBody:
         content:
           application/json:
@@ -84,7 +89,7 @@ paths:
                 - phone
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
 
         "200":
           description: Successful response, session has been started
@@ -92,15 +97,17 @@ paths:
             application/json:
               examples:
                 success:
-                  $ref: "identigraf-auth-common.yaml#/components/examples/startSession"
+                  $ref: "./identigraf-auth-common.yaml#/components/examples/startSession"
               schema:
-                $ref: "identigraf-auth-common.yaml#/components/schemas/startSessionResponse"
+                $ref: "./identigraf-auth-common.yaml#/components/schemas/startSessionResponse"
 
   /track:
     post:
       summary: Track search or compare operation
       tags:
         - IDentigraF Internal Tracking API
+      security: []
+      operationId: trackOperation
       requestBody:
         required: true
         content:
@@ -110,7 +117,7 @@ paths:
               guid: "00000000-0000-0000-0000-000000000000"
               phone: "+380680000000"
               ips:
-                - "78.30.235.66"
+                - '78.30.235.66'
               dt: 1593640625
             schema:
               type: object
@@ -148,7 +155,7 @@ paths:
                 - dt
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
 
         "200":
           $ref: "#/components/responses/trackUpload"
@@ -159,6 +166,8 @@ paths:
       description: This is an internal API endpoint, it cannot be invoked from the outside.
       tags:
         - IDentigraF Internal Authentication API
+      security: []
+      operationId: getRemainingCredits
       parameters:
         - name: phone
           description: Phone number
@@ -171,7 +180,7 @@ paths:
             # pattern: "^380[0-9]{9}$"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
 
         "200":
           $ref: "#/components/responses/checkCredits"
@@ -181,11 +190,13 @@ paths:
       summary: Check phone number
       tags:
         - IDentigraF Internal Authentication API
+      security: []
+      operationId: checkPhone
       requestBody:
-        $ref: "identigraf-auth-common.yaml#/components/requestBodies/checkPhone"
+        $ref: "./identigraf-auth-common.yaml#/components/requestBodies/checkPhone"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
 
         "429":
           description: Too Many Requests
@@ -200,7 +211,7 @@ paths:
                 type: object
                 properties:
                   success:
-                    $ref: "generic-responses.yaml#/components/schemas/operationFailed"
+                    $ref: "./generic-responses.yaml#/components/schemas/operationFailed"
                   status:
                     description: HTTP status code
                     type: number
@@ -232,69 +243,77 @@ paths:
                 type: integer
 
         "200":
-          $ref: "identigraf-auth-common.yaml#/components/responses/checkPhoneSucceeded"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/checkPhoneSucceeded"
 
   /users/{id}:
     get:
       summary: Get user by ID.
       tags:
         - IDentigraF Internal User API
+      security: []
+      operationId: getUserById
       parameters:
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/userID"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/userID"
       responses:
         "200":
-          $ref: "identigraf-auth-common.yaml#/components/responses/getUserById"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/getUserById"
         "404":
-          $ref: "identigraf-auth-common.yaml#/components/responses/userNotFound"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/userNotFound"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
     patch:
       summary: Update user by ID.
       tags:
         - IDentigraF Internal User API
+      security: []
+      operationId: patchUserById
       parameters:
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/userID"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/userID"
       requestBody:
-        $ref: "identigraf-auth-common.yaml#/components/requestBodies/patchUser"
+        $ref: "./identigraf-auth-common.yaml#/components/requestBodies/patchUser"
       responses:
         "200":
-          $ref: "identigraf-auth-common.yaml#/components/responses/getUserById"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/getUserById"
         "400":
-          $ref: "identigraf-auth-common.yaml#/components/responses/patchBadRequest"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/patchBadRequest"
         "404":
-          $ref: "identigraf-auth-common.yaml#/components/responses/userNotFound"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/userNotFound"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
     put:
       summary: Update user by ID.
       tags:
         - IDentigraF Internal User API
+      security: []
+      operationId: updateUserById
       parameters:
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/userID"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/userID"
       requestBody:
-        $ref: "identigraf-auth-common.yaml#/components/requestBodies/updateUser"
+        $ref: "./identigraf-auth-common.yaml#/components/requestBodies/updateUser"
       responses:
         "200":
-          $ref: "identigraf-auth-common.yaml#/components/responses/getUserById"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/getUserById"
         "404":
-          $ref: "identigraf-auth-common.yaml#/components/responses/userNotFound"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/userNotFound"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
 
   /users:
     get:
       summary: Get user list.
       tags:
         - IDentigraF Internal User API
+      security: []
+      operationId: searchUsers
       parameters:
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/searchLogin"
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/searchComment"
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/searchUserSort"
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/sortDirection"
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/queryOffset"
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/queryLimit"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/searchLogin"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/searchComment"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/searchUserSort"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/sortDirection"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/queryOffset"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/queryLimit"
       responses:
         "200":
-          $ref: "identigraf-auth-common.yaml#/components/responses/searchUsers"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/searchUsers"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"

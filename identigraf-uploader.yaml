@@ -4,6 +4,9 @@ info:
   title: IDentigraF Uploader API
   description: "API for IDentigraF's Uploader Microservice"
   version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   contact:
     email: support@myrotvorets.center
 
@@ -16,40 +19,46 @@ servers:
 paths:
   /get/{guid}:
     get:
-      description: Retrieve a photo by search operation GUID
+      summary: Retrieve a photo by search operation GUID
       tags:
         - IDentigraF Uploader API
+      security: []
+      operationId: getSearchPhoto
       parameters:
-        - $ref: "identigraf-uploader-common.yaml#/components/parameters/guid"
+        - $ref: "./identigraf-uploader-common.yaml#/components/parameters/guid"
       responses:
         "200":
-          $ref: "identigraf-uploader-common.yaml#/components/responses/getSuccessfulResponse"
+          $ref: "./identigraf-uploader-common.yaml#/components/responses/getSuccessfulResponse"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
 
   /get/{guid}/{number}:
     get:
-      description: Retrieve a photo by the compare operation GUID and photo number
+      summary: Retrieve a photo by the compare operation GUID and photo number
       tags:
         - IDentigraF Uploader API
+      security: []
+      operationId: getComparePhoto
       parameters:
-        - $ref: "identigraf-uploader-common.yaml#/components/parameters/guid"
-        - $ref: "identigraf-uploader-common.yaml#/components/parameters/number"
+        - $ref: "./identigraf-uploader-common.yaml#/components/parameters/guid"
+        - $ref: "./identigraf-uploader-common.yaml#/components/parameters/number"
       responses:
         "200":
-          $ref: "identigraf-uploader-common.yaml#/components/responses/getSuccessfulResponse"
+          $ref: "./identigraf-uploader-common.yaml#/components/responses/getSuccessfulResponse"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
 
   /count/{guid}:
     get:
-      description: Retrieve the number of photos for the compare operation identified by GUID
+      summary: Retrieve the number of photos for the compare operation identified by GUID
       tags:
         - IDentigraF Uploader API
+      security: []
+      operationId: countPhotos
       parameters:
-        - $ref: "identigraf-uploader-common.yaml#/components/parameters/guid"
+        - $ref: "./identigraf-uploader-common.yaml#/components/parameters/guid"
       responses:
         "200":
-          $ref: "identigraf-uploader-common.yaml#/components/responses/countSuccessfulResponse"
+          $ref: "./identigraf-uploader-common.yaml#/components/responses/countSuccessfulResponse"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"

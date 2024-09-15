@@ -80,7 +80,7 @@ components:
       type: object
       properties:
         success:
-          $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+          $ref: "./generic-responses.yaml#/components/schemas/operationSucceeded"
         ids:
           description: Suspects IDs
           type: array
@@ -97,7 +97,7 @@ components:
       type: object
       properties:
         success:
-          $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+          $ref: "./generic-responses.yaml#/components/schemas/operationSucceeded"
         photos:
           description: Suspects IDs
           type: array
@@ -129,7 +129,7 @@ components:
       type: object
       properties:
         success:
-          $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+          $ref: "./generic-responses.yaml#/components/schemas/operationSucceeded"
         payload:
           description: Response payload
           type: object

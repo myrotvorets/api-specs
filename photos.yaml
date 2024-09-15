@@ -4,6 +4,9 @@ info:
   title: Photos Microservice
   description: FaceX Photo API. The microservice is designed to be used by FaceX-related infrastructure
   version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   contact:
     email: support@myrotvorets.center
 
@@ -30,10 +33,11 @@ paths:
       tags:
         - Photos
       parameters:
-        - $ref: "photos-common.yaml#/components/parameters/after"
-        - $ref: "photos-common.yaml#/components/parameters/count"
+        - $ref: "./photos-common.yaml#/components/parameters/after"
+        - $ref: "./photos-common.yaml#/components/parameters/count"
       security:
         - photos-auth: []
+      operationId: getSuspectsIDs
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
@@ -47,9 +51,9 @@ paths:
             "application/json":
               examples:
                 getSuspectsIDs:
-                  $ref: "photos-common.yaml#/components/examples/getSuspectsIDs"
+                  $ref: "./photos-common.yaml#/components/examples/getSuspectsIDs"
               schema:
-                $ref: "photos-common.yaml#/components/schemas/getSuspectsIDsResponse"
+                $ref: "./photos-common.yaml#/components/schemas/getSuspectsIDsResponse"
 
   /suspects/{id}:
     get:
@@ -58,9 +62,10 @@ paths:
       tags:
         - Photos
       parameters:
-        - $ref: "photos-common.yaml#/components/parameters/cid"
+        - $ref: "./photos-common.yaml#/components/parameters/cid"
       security:
         - photos-auth: []
+      operationId: getSuspectPhotos
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
@@ -74,9 +79,9 @@ paths:
             "application/json":
               examples:
                 getSuspectPhotos:
-                  $ref: "photos-common.yaml#/components/examples/getSuspectPhotos"
+                  $ref: "./photos-common.yaml#/components/examples/getSuspectPhotos"
               schema:
-                $ref: "photos-common.yaml#/components/schemas/getSuspectPhotosResponse"
+                $ref: "./photos-common.yaml#/components/schemas/getSuspectPhotosResponse"
 
   /{id}:
     get:
@@ -85,9 +90,10 @@ paths:
       tags:
         - Photos
       parameters:
-        - $ref: "photos-common.yaml#/components/parameters/att_id"
+        - $ref: "./photos-common.yaml#/components/parameters/att_id"
       security:
         - photos-auth: []
+      operationId: getPhotoByID
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
@@ -113,9 +119,10 @@ paths:
       tags:
         - Photos
       parameters:
-        - $ref: "photos-common.yaml#/components/parameters/att_id"
+        - $ref: "./photos-common.yaml#/components/parameters/att_id"
       security:
         - photos-auth: []
+      operationId: getPhotoByIDForFaceX
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
@@ -141,6 +148,7 @@ paths:
         - Photos
       security:
         - photos-auth: []
+      operationId: getNextEntryToSync
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
@@ -153,7 +161,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "photos-common.yaml#/components/schemas/syncResponse"
+                $ref: "./photos-common.yaml#/components/schemas/syncResponse"
         "204":
           description: No entries to sync
 
@@ -163,6 +171,9 @@ paths:
       description: Marks the entry in the sync log as succeeded ot failed
       tags:
         - Photos
+      security:
+        - photos-auth: []
+      operationId: setSyncStatus
       parameters:
         - $ref: 'photos-common.yaml#/components/parameters/sync_id'
       requestBody:
@@ -171,8 +182,6 @@ paths:
           application/json:
             schema:
               $ref: 'photos-common.yaml#/components/schemas/setSyncStatusRequest'
-      security:
-        - photos-auth: []
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
@@ -191,11 +200,12 @@ paths:
         Only IDs greater than `:after` are returned
       tags:
         - Photos
-      parameters:
-        - $ref: "photos-common.yaml#/components/parameters/after"
-        - $ref: "photos-common.yaml#/components/parameters/count"
       security:
         - photos-auth: []
+      operationId: getSuspectsIDsToSync
+      parameters:
+        - $ref: "./photos-common.yaml#/components/parameters/after"
+        - $ref: "./photos-common.yaml#/components/parameters/count"
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"
@@ -209,19 +219,20 @@ paths:
             "application/json":
               examples:
                 getSuspectsIDs:
-                  $ref: "photos-common.yaml#/components/examples/getSuspectsIDs"
+                  $ref: "./photos-common.yaml#/components/examples/getSuspectsIDs"
               schema:
-                $ref: "photos-common.yaml#/components/schemas/getSuspectsIDsResponse"
+                $ref: "./photos-common.yaml#/components/schemas/getSuspectsIDsResponse"
 
   /sync/suspects/{id}:
     delete:
-      description: Marks the suspect as synchronized with FaceX
+      summary: Marks the suspect as synchronized with FaceX
       tags:
         - Photos
-      parameters:
-        - $ref: "photos-common.yaml#/components/parameters/cid"
       security:
         - photos-auth: []
+      operationId: markSuspectAsSynced
+      parameters:
+        - $ref: "./photos-common.yaml#/components/parameters/cid"
       responses:
         default:
           $ref: "./generic-responses.yaml#/components/responses/error_generic"

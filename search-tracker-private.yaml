@@ -4,6 +4,9 @@ info:
   title: Search Tracker API
   description: Search Query Tracker (Private API)
   version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   contact:
     email: support@myrotvorets.center
 
@@ -17,6 +20,8 @@ paths:
       summary: Track search query
       tags:
         - Search Tracker
+      security: []
+      operationId: trackSearchQuery
       requestBody:
         content:
           application/json:
@@ -86,7 +91,7 @@ paths:
                 - src
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "204":
           description: Search query has been logged.
 

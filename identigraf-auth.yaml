@@ -4,6 +4,9 @@ info:
   title: IDentigraF Authentication API
   description: Authentication and Tracking API for [IDentigraF](https://neuro.identigraf.center/)
   version: 2.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   contact:
     email: support@myrotvorets.center
 
@@ -26,16 +29,17 @@ paths:
       tags:
         - IDentigraF Authentication API
       security:
-        - identigraf-jwt: []
+        - myrotvorets-jwt: []
+      operationId: login
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
 
         "401":
-          $ref: "generic-responses.yaml#/components/responses/not-authorized"
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
 
         "429":
-          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
 
         "200":
           description: Successful response, session has been started
@@ -43,9 +47,9 @@ paths:
             application/json:
               examples:
                 success:
-                  $ref: "identigraf-auth-common.yaml#/components/examples/startSession"
+                  $ref: "./identigraf-auth-common.yaml#/components/examples/startSession"
               schema:
-                $ref: "identigraf-auth-common.yaml#/components/schemas/startSessionResponse"
+                $ref: "./identigraf-auth-common.yaml#/components/schemas/startSessionResponse"
 
   /checkphone:
     post:
@@ -56,20 +60,22 @@ paths:
           * `RATE_LIMIT_EXCEEDED`: please slow down, you are sending too many requests
       tags:
         - IDentigraF Authentication API
+      security: []
+      operationId: checkPhone
       requestBody:
-        $ref: "identigraf-auth-common.yaml#/components/requestBodies/checkPhone"
+        $ref: "./identigraf-auth-common.yaml#/components/requestBodies/checkPhone"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
 
         "403":
-          $ref: "generic-responses.yaml#/components/responses/forbidden"
+          $ref: "./generic-responses.yaml#/components/responses/forbidden"
 
         "429":
-          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
 
         "200":
-          $ref: "identigraf-auth-common.yaml#/components/responses/checkPhoneSucceeded"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/checkPhoneSucceeded"
 
   /users/{id}:
     get:
@@ -78,51 +84,54 @@ paths:
         - IDentigraF User API
       security:
         - myrotvorets-jwt: []
+      operationId: getUserById
       parameters:
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/userID"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/userID"
       responses:
         "200":
-          $ref: "identigraf-auth-common.yaml#/components/responses/getUserById"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/getUserById"
         "404":
-          $ref: "identigraf-auth-common.yaml#/components/responses/userNotFound"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/userNotFound"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
     patch:
       summary: Update user by ID.
       tags:
         - IDentigraF User API
       security:
         - myrotvorets-jwt: []
+      operationId: patchUserById
       parameters:
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/userID"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/userID"
       requestBody:
-        $ref: "identigraf-auth-common.yaml#/components/requestBodies/patchUser"
+        $ref: "./identigraf-auth-common.yaml#/components/requestBodies/patchUser"
       responses:
         "200":
-          $ref: "identigraf-auth-common.yaml#/components/responses/getUserById"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/getUserById"
         "400":
-          $ref: "identigraf-auth-common.yaml#/components/responses/patchBadRequest"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/patchBadRequest"
         "404":
-          $ref: "identigraf-auth-common.yaml#/components/responses/userNotFound"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/userNotFound"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
     put:
       summary: Update user by ID.
       tags:
         - IDentigraF User API
       security:
         - myrotvorets-jwt: []
+      operationId: updateUserById
       parameters:
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/userID"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/userID"
       requestBody:
-        $ref: "identigraf-auth-common.yaml#/components/requestBodies/updateUser"
+        $ref: "./identigraf-auth-common.yaml#/components/requestBodies/updateUser"
       responses:
         "200":
-          $ref: "identigraf-auth-common.yaml#/components/responses/getUserById"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/getUserById"
         "404":
-          $ref: "identigraf-auth-common.yaml#/components/responses/userNotFound"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/userNotFound"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
 
   /users:
     get:
@@ -131,15 +140,16 @@ paths:
         - IDentigraF User API
       security:
         - myrotvorets-jwt: []
+      operationId: searchUsers
       parameters:
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/searchLogin"
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/searchComment"
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/searchUserSort"
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/sortDirection"
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/queryOffset"
-        - $ref: "identigraf-auth-common.yaml#/components/parameters/queryLimit"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/searchLogin"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/searchComment"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/searchUserSort"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/sortDirection"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/queryOffset"
+        - $ref: "./identigraf-auth-common.yaml#/components/parameters/queryLimit"
       responses:
         "200":
-          $ref: "identigraf-auth-common.yaml#/components/responses/searchUsers"
+          $ref: "./identigraf-auth-common.yaml#/components/responses/searchUsers"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"

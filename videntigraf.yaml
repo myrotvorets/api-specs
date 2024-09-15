@@ -4,6 +4,9 @@ info:
   title: VIDentigraF
   description: VIDentigraF API
   version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   contact:
     email: support@myrotvorets.center
 
@@ -30,19 +33,20 @@ paths:
         - VIDentigraF API
       security:
         - identigraf-bearer-token: []
+      operationId: uploadVideo
       requestBody:
-        $ref: "videntigraf-common.yaml#/components/requestBodies/upload"
+        $ref: "./videntigraf-common.yaml#/components/requestBodies/upload"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "401":
-          $ref: "generic-responses.yaml#/components/responses/not-authorized"
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
         "403":
-          $ref: "generic-responses.yaml#/components/responses/forbidden"
+          $ref: "./generic-responses.yaml#/components/responses/forbidden"
         "502":
-          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
-          $ref: "videntigraf-common.yaml#/components/responses/successfulUpload"
+          $ref: "./videntigraf-common.yaml#/components/responses/successfulUpload"
 
   /process/{guid}:
     get:
@@ -53,24 +57,24 @@ paths:
         - number of faces matched with existing records;
         - total number of archives with detected faces;
         - number of archives with matched faces.
-      operationId: getProcessingStatus
       tags:
         - VIDentigraF API
       security:
         - identigraf-bearer-token: []
+      operationId: getProcessingStatus
       parameters:
-        - $ref: "videntigraf-common.yaml#/components/parameters/guid"
+        - $ref: "./videntigraf-common.yaml#/components/parameters/guid"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "401":
-          $ref: "generic-responses.yaml#/components/responses/not-authorized"
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
         "403":
-          $ref: "generic-responses.yaml#/components/responses/forbidden"
+          $ref: "./generic-responses.yaml#/components/responses/forbidden"
         "502":
-          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
-          $ref: "videntigraf-common.yaml#/components/responses/processingStatus"
+          $ref: "./videntigraf-common.yaml#/components/responses/processingStatus"
 
   /process/{guid}/detections/{archive}:
     get:
@@ -87,19 +91,19 @@ paths:
         - identigraf-bearer-token: []
       operationId: getDetections
       parameters:
-        - $ref: "videntigraf-common.yaml#/components/parameters/guid"
-        - $ref: "videntigraf-common.yaml#/components/parameters/archive"
+        - $ref: "./videntigraf-common.yaml#/components/parameters/guid"
+        - $ref: "./videntigraf-common.yaml#/components/parameters/archive"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "401":
-          $ref: "generic-responses.yaml#/components/responses/not-authorized"
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
         "403":
-          $ref: "generic-responses.yaml#/components/responses/forbidden"
+          $ref: "./generic-responses.yaml#/components/responses/forbidden"
         "502":
-          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
-          $ref: "videntigraf-common.yaml#/components/responses/zipArchive"
+          $ref: "./videntigraf-common.yaml#/components/responses/zipArchive"
 
   /process/{guid}/matches/{archive}:
     get:
@@ -116,16 +120,16 @@ paths:
         - identigraf-bearer-token: []
       operationId: getMatches
       parameters:
-        - $ref: "videntigraf-common.yaml#/components/parameters/guid"
-        - $ref: "videntigraf-common.yaml#/components/parameters/archive"
+        - $ref: "./videntigraf-common.yaml#/components/parameters/guid"
+        - $ref: "./videntigraf-common.yaml#/components/parameters/archive"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "401":
-          $ref: "generic-responses.yaml#/components/responses/not-authorized"
+          $ref: "./generic-responses.yaml#/components/responses/not-authorized"
         "403":
-          $ref: "generic-responses.yaml#/components/responses/forbidden"
+          $ref: "./generic-responses.yaml#/components/responses/forbidden"
         "502":
-          $ref: "generic-responses.yaml#/components/responses/bad-gateway"
+          $ref: "./generic-responses.yaml#/components/responses/bad-gateway"
         "200":
-          $ref: "videntigraf-common.yaml#/components/responses/zipArchive"
+          $ref: "./videntigraf-common.yaml#/components/responses/zipArchive"

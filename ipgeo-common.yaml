@@ -41,7 +41,7 @@ components:
       type: object
       properties:
         success:
-          $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+          $ref: "./generic-responses.yaml#/components/schemas/operationSucceeded"
         response:
           description: Geolocation response.
           type: object
@@ -67,7 +67,7 @@ components:
       type: object
       properties:
         success:
-          $ref: "generic-responses.yaml#/components/schemas/operationSucceeded"
+          $ref: "./generic-responses.yaml#/components/schemas/operationSucceeded"
         response:
           description: Geolocation response.
           type: object

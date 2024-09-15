@@ -3,6 +3,9 @@ openapi: "3.0.3"
 info:
   title: IP Geolocation API
   version: 2.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   contact:
     email: support@myrotvorets.center
 
@@ -15,9 +18,11 @@ servers:
 paths:
   /country:
     get:
-      description: Get country information for the connecting IP.
+      summary: Get country information for the connecting IP.
       tags:
         - IP Geolocation API
+      security: []
+      operationId: getCountry
       responses:
         "200":
           description: Successful response.
@@ -25,21 +30,23 @@ paths:
             "application/json":
               examples:
                 successfulResponse:
-                  $ref: "ipgeo-common.yaml#/components/examples/countryResponseBody"
+                  $ref: "./ipgeo-common.yaml#/components/examples/countryResponseBody"
               schema:
-                $ref: "ipgeo-common.yaml#/components/schemas/countryResponseBody"
+                $ref: "./ipgeo-common.yaml#/components/schemas/countryResponseBody"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "429":
-          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
 
   /geolocate/{ip}:
     get:
-      description: Get geolocation information about the IP address.
+      summary: Get geolocation information about the IP address.
       tags:
         - IP Geolocation API
+      security: []
+      operationId: geolocate
       parameters:
-        - $ref: "ipgeo-common.yaml#/components/parameters/ip"
+        - $ref: "./ipgeo-common.yaml#/components/parameters/ip"
       responses:
         "200":
           description: Successful response.
@@ -47,10 +54,10 @@ paths:
             "application/json":
               examples:
                 successfulResponse:
-                  $ref: "ipgeo-common.yaml#/components/examples/geolocateResponseBody"
+                  $ref: "./ipgeo-common.yaml#/components/examples/geolocateResponseBody"
               schema:
-                $ref: "ipgeo-common.yaml#/components/schemas/geolocateResponseBody"
+                $ref: "./ipgeo-common.yaml#/components/schemas/geolocateResponseBody"
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
         "429":
-          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"

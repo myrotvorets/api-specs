@@ -5,6 +5,9 @@ info:
   description: |
     API for IDentigraF's Decoder Microservice: parses encoded object IDs, and retrieves some information about them
   version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   contact:
     email: support@myrotvorets.center
 
@@ -20,24 +23,26 @@ paths:
       summary: Decode object names
       tags:
         - IDentigraF Decoder API
+      security: []
+      operationId: decode
       requestBody:
         required: true
         content:
           application/json:
             examples:
               decodeRequestBody:
-                $ref: "identigraf-decoder-common.yaml#/components/examples/decodeRequestBody"
+                $ref: "./identigraf-decoder-common.yaml#/components/examples/decodeRequestBody"
             schema:
-              $ref: "identigraf-decoder-common.yaml#/components/schemas/decodeRequestBody"
+              $ref: "./identigraf-decoder-common.yaml#/components/schemas/decodeRequestBody"
       responses:
         default:
-          $ref: "generic-responses.yaml#/components/responses/error_generic"
+          $ref: "./generic-responses.yaml#/components/responses/error_generic"
 
         "403":
-          $ref: "generic-responses.yaml#/components/responses/forbidden"
+          $ref: "./generic-responses.yaml#/components/responses/forbidden"
 
         "429":
-          $ref: "generic-responses.yaml#/components/responses/rate-limit"
+          $ref: "./generic-responses.yaml#/components/responses/rate-limit"
 
         "200":
           description: Successful response
@@ -45,8 +50,8 @@ paths:
             application/json:
               examples:
                 success:
-                  $ref: "identigraf-decoder-common.yaml#/components/examples/decodeResponseBody"
+                  $ref: "./identigraf-decoder-common.yaml#/components/examples/decodeResponseBody"
                 nothing-decoded:
-                  $ref: "identigraf-decoder-common.yaml#/components/examples/decodeResponseBodyEmpty"
+                  $ref: "./identigraf-decoder-common.yaml#/components/examples/decodeResponseBodyEmpty"
               schema:
-                $ref: "identigraf-decoder-common.yaml#/components/schemas/decodeResponseBody"
+                $ref: "./identigraf-decoder-common.yaml#/components/schemas/decodeResponseBody"
